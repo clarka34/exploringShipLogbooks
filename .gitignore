@@ -1,3 +1,6 @@
+# Data folder
+data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -58,12 +61,5 @@ docs/_build/
 # PyBuilder
 target/
 
-# Ipython Notebook
+#Ipython Notebook
 .ipynb_checkpoints
-
-# DS_Store files
-*.DS_Store
-
-#Extracted data files
-climate-data-from-ocean-ships/
-*.csv
