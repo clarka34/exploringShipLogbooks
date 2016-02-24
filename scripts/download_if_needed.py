@@ -1,11 +1,9 @@
 import os
 import urllib3
-import zipfile
 
 import pandas as pd
 
 from urllib3.exceptions import MaxRetryError, LocationValueError
-
 
 def download_if_needed(url, filename):
     """
@@ -15,17 +13,16 @@ def download_if_needed(url, filename):
         - filename: name that will be given to the downloaded file
     Outputs:
         - no ouputs; saves file to specified location
-
     """
 
     # check to see if the file is already downloaded
     if os.path.exists(filename):
-        filenameExists=(filename, 'already exists')
-        return filenameExists
+        filename_exists=(filename, 'already exists')
+        return filename_exists
 
     # if the file has not been downloaded, use urllib3 to download the file
     # exceptions add for possible connection errors
-    elif filename:
+    else:
         import requests
         urllib3.disable_warnings()
         try:
@@ -35,16 +32,11 @@ def download_if_needed(url, filename):
             f.write(resp.data)
             f.close()
             resp.release_conn()
-            downloadSuccessful=('Downloading', filename)
-            return(downloadSuccessful)
+            download_successful=('Downloading', filename)
+            return download_successful
         except MaxRetryError as e:
             exception='Could not connect to server. Please check to make sure the URL is valid and try again.'
             return exception
         except LocationValueError as e:
             exception=str(e)
             return exception
-
-    # check the filename to make sure it is correct
-    else:
-        warningMessage='Please input a correct filename.'
-        return warningMessage
