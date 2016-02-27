@@ -18,7 +18,7 @@ def count_key_words(data, columns, key_words):
     Outputs:
         - total_key_word_count: dictionary with number of occurences of each specified
                                 key word
-        - mentions_key_words: pandas data frame containing shipID (ship name + voyage
+        - mentions_key_words: pandas data frame containing ship info (ship name + voyage
                               from + voyage to) and whether there were any mentions of
                               key words for each log
 
@@ -53,12 +53,10 @@ def count_key_words(data, columns, key_words):
         else:
             mentions_slaves.append(0)
 
-    # generate ship ID (name of ship, home and destination for each log)
-    ship_ID = data['ShipName'] + ' ' + data['VoyageFrom'] + ' ' + data['VoyageTo']
-
     # format pandas dataframe with ship ID and whether there are any
     # mentions of key words (boolean)
-    mentions_key_words = pd.DataFrame.from_items([('ShipID', ship_ID), ('ContainsKeyWord', mentions_slaves)])
+    mentions_key_words = pd.DataFrame.from_items([('ShipName', data['ShipName']), ('VoyageFrom', data['VoyageFrom']),
+                                                  ('VoyageTo', data['VoyageTo']), ('ContainsKeyWord', mentions_slaves)])
 
     # count total number of mentions for each key word
     # (this could help determine which words are useful, etc)
@@ -102,14 +100,16 @@ def slave_mentions_by_voyage(data, columns, key_words):
 
     total_key_word_count, mentions_key_words = count_key_words(data, columns, key_words)
 
-    # find all unique ship IDs
-    ship_IDs = mentions_key_words.ShipID.unique()
+    # find all unique voyages
+    all_ship_IDs = data['ShipName'] + ' ' + data['VoyageFrom'] + ' ' + data['VoyageTo']
+    ship_IDs = all_ship_IDs.unique()
 
     log_mentions = []
     for index, ship_ID in enumerate(ship_IDs):
-        ship_data = mentions_key_words[mentions_key_words['ShipID'] == ship_ID]
+        ship_data = mentions_key_words[all_ship_IDs == ship_ID]
         log_mentions.append(sum(ship_data['ContainsKeyWord']))
 
-    voyage_mentions = pd.DataFrame.from_items([('ShipID', ship_IDs), ('LogMentions',log_mentions)])
+    # create pandas dataframe
+    log_mentions_by_voyage = pd.DataFrame.from_items([('ShipID', ship_IDs), ('LogMentions',log_mentions)])
 
-    return voyage_mentions
+    return log_mentions_by_voyage
