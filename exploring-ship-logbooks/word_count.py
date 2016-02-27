@@ -1,6 +1,9 @@
 import pandas as pd
 from collections import Counter
 
+import pandas as pd
+from collections import Counter
+
 def count_key_words(data, columns, key_words):
     """
     Generates a list containing the number of counts of each key word in
@@ -16,10 +19,11 @@ def count_key_words(data, columns, key_words):
     be counted in a search for "cap")
 
     Outputs:
-        - word_count_list: a list of dictionaries with the same length as data.
-                           each dictionary contains an entry for each key word
-                           with the number of times that word appeared in an
-                           entry.
+        - total_key_word_count: dictionary with number of occurences of each specified
+                                key word
+        - mentions_key_words: pandas data frame containing shipID (ship name + voyage
+                              from + voyage to) and whether there were any mentions of
+                              key words for each log
 
     """
 
@@ -52,8 +56,10 @@ def count_key_words(data, columns, key_words):
         else:
             mentions_slaves.append(0)
 
-    mentions_key_words = pd.DataFrame.from_items([('ShipName', data['ShipName']), ('VoyageFrom', data['VoyageFrom']),
-                                                  ('VoyageTo', data['VoyageTo']), ('MentionsSlaves', mentions_slaves)])
+    # generate ship ID (name of ship, home and destination for each log)
+    ship_ID = data['ShipName'] + ' ' + data['VoyageFrom'] + ' ' + data['VoyageTo']
+
+    mentions_key_words = pd.DataFrame.from_items([('ShipID', ship_ID), ('Counts', mentions_slaves)])
 
     # count total for each key word
     total_key_word_count = {}
@@ -86,3 +92,23 @@ def count_all_words(data, columns):
     word_count_pd.index = range(1,len(word_count_pd) + 1)
 
     return word_count_pd
+
+def slave_mentions_by_voyage(data, columns, key_words):
+    """
+    Finds the total number of logs that mention slave keywords for each unique
+    voyage (identified by ship name, starting location, and end location)
+    """
+
+    total_key_word_count, mentions_key_words = count_key_words(data, columns, key_words)
+
+    # find all unique ship IDs
+    ship_IDs = mentions_key_words.ShipID.unique()
+
+    log_mentions = []
+    for ship_ID, index in enumerate(ship_IDs):
+        ship_data = mentions_key_words[mentions_key_words['ShipID'] == ship_ID]
+        log_mentions.append(sum(ship_data['Counts']))
+
+    voyage_mentions = pd.DataFrame.from_items([('ShipID', ship_IDs), ('LogMentions',log_mentions)])
+
+    return voyage_mentions
