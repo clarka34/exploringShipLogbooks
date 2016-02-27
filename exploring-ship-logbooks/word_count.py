@@ -24,24 +24,44 @@ def count_key_words(data, columns, key_words):
     """
 
     all_words = []
+    mentions_slaves = []
 
     # for every row in data
     for index, row in data.iterrows():
 
+        remarks = []
         # aggregate words from each specified column
         for column in columns:
             remark = row[column]
-            if isinstance(remark,str):
-                all_words += remark.split(' ')
+            if isinstance(remark, str):
+                remarks += remark.split(' ')
 
-    # count each key word
-    key_word_count = {}
+        added = 0
+        if remarks:
+            for key_word in key_words:
+                # determine if any mentions of key_words in log
+                if remarks.count(key_word.upper()):
+                    mentions_slaves.append(1)
+                    added = 1
+
+            if not added:
+                mentions_slaves.append(0)
+
+            all_words += remarks
+
+        else:
+            mentions_slaves.append(0)
+
+    mentions_key_words = pd.DataFrame.from_items([('ShipName', data['ShipName']), ('VoyageFrom', data['VoyageFrom']),
+                                                  ('VoyageTo', data['VoyageTo']), ('MentionsSlaves', mentions_slaves)])
+
+    # count total for each key word
+    total_key_word_count = {}
     for key_word in key_words:
-        key_word_count[key_word] = all_words.count(key_word.upper())
+        total_key_word_count[key_word] = all_words.count(key_word.upper())
 
-    return key_word_count
+    return total_key_word_count, mentions_key_words
 
-from collections import Counter
 
 def count_all_words(data, columns):
     """returns a dataframe containing a count of all words in the logbooks
