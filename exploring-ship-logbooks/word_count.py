@@ -12,19 +12,14 @@ def count_key_words(data, columns, key_words):
                   (typical value is ['CargoMemo', 'LifeOnBoardMemo', 'OtherRem'])
         - key_words: words to search for.
 
-    Note: a word will be counted if it contains a key word. (i.e. "captain" will
-    be counted in a search for "cap")
-
     Outputs:
         - total_key_word_count: dictionary with number of occurences of each specified
                                 key word
         - mentions_key_words: pandas data frame containing ship info (ship name + voyage
                               from + voyage to) and whether there were any mentions of
                               key words for each log
-
     """
 
-    all_words = []
     mentions_slaves = []
 
     # for every row in data
@@ -35,6 +30,7 @@ def count_key_words(data, columns, key_words):
         for column in columns:
             remark = row[column]
             if isinstance(remark, str):
+                remark = remark.upper()
                 remarks += remark.split(' ')
 
         added = 0
@@ -44,27 +40,22 @@ def count_key_words(data, columns, key_words):
                 if remarks.count(key_word.upper()) and not added:
                     mentions_slaves.append(1)
                     added = 1
-
+                    break
             if not added:
                 mentions_slaves.append(0)
 
-            all_words += remarks
 
         else:
             mentions_slaves.append(0)
 
     # format pandas dataframe with ship ID and whether there are any
     # mentions of key words (boolean)
-    mentions_key_words = pd.DataFrame.from_items([('ShipName', data['ShipName']), ('VoyageFrom', data['VoyageFrom']),
-                                                  ('VoyageTo', data['VoyageTo']), ('ContainsKeyWord', mentions_slaves)])
+    mentions_key_words = pd.DataFrame.from_items([('ShipName', data['ShipName']),
+                                                  ('VoyageFrom', data['VoyageFrom']),
+                                                  ('VoyageTo', data['VoyageTo']),
+                                                  ('ContainsKeyWord', mentions_slaves)])
 
-    # count total number of mentions for each key word
-    # (this could help determine which words are useful, etc)
-    total_key_word_count = {}
-    for key_word in key_words:
-        total_key_word_count[key_word] = all_words.count(key_word.upper())
-
-    return total_key_word_count, mentions_key_words
+    return mentions_key_words
 
 
 def count_all_words(data, columns):
