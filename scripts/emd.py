@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 from emd import emd
 
 """
-If data is not ready, we need download the raw data and unzip the files in the same route
-If data is ready, return the DataFrame
+To use emd function, we need to install pyemd package on your machine first. (Windows machine may not supported)
+
+https://github.com/garydoranjr/pyemd
+
 """
 def if_data_ready(filename):
     if os.path.exists(filename):
@@ -39,7 +41,7 @@ def trip_plot(trip_id,data):
     plt.show()
   
 if __name__ == "__main__":
-    processed_data = if_data_ready("trip_data.xlsx")
+    processed_data = if_data_ready("trip_data.xlsx") # Change the filename if necessary
     #trip_plot(1,processed_data)
     #trip_plot(2,processed_data)
     print emd(get_trip_data(1,processed_data),get_trip_data(2,processed_data))
