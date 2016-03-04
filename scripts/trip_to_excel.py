@@ -64,20 +64,20 @@ def split_trip():
     position_all = []
     trip_id = 1
     for ship in shipname:
-        position = raw_data[raw_data["ShipName"]==ship][pd.notnull(raw_data["Lat3"])][pd.notnull(raw_data["Lon3"])][["Lat3","Lon3","VoyageFrom","VoyageTo","Year","Month","Day","UTC"]]
+        position = raw_data[raw_data["ShipName"]==ship][pd.notnull(raw_data["Lat3"])][pd.notnull(raw_data["Lon3"])][["Lat3","Lon3","VoyageFrom","VoyageTo","Year","Month","Day","UTC","Nationality","WarsAndFights"]]
         position = position.sort_values(by='UTC', ascending=True)
         position.insert(8, "Date", position['UTC'])
         position['Date'] = position['Date'] // 100
         #print(ship, end=" ")   ##For testing which ship got errer message
         trip_id = is_new_trip(position,trip_id)
-        position_each_ship = list(zip([ship]*len(position["Lat3"]),position["Lat3"],position["Lon3"],position["Trip"]))
+        position_each_ship = list(zip([ship]*len(position["Lat3"]),position["Nationality"],position["VoyageFrom"],position["VoyageTo"],position["Year"],position["Date"],position["Lat3"],position["Lon3"],position["WarsAndFights"],position["Trip"]))
         position_all += position_each_ship
     return position_all
 if __name__ == "__main__":
     file_path ="C:\\Users\\Administrator\\data\\data\\CLIWOC15.csv"
     raw_data = if_data_ready(file_path)
-    df = pd.DataFrame(split_trip(), columns=['ShipName', 'Lat3', 'Lon3', 'Trip'])
-    df.to_excel('output.xlsx',index=False)
+    df = pd.DataFrame(split_trip(), columns=['ShipName',"Nationality","VoyageFrom","VoyageTo","Year","Date",'Latitude', 'Longtitude', "ifWarsAndFights",'Trip'])
+    df.to_excel('Trip_Data.xlsx',index=False)
 
 
             
