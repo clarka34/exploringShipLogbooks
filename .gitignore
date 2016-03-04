@@ -67,3 +67,6 @@ target/
 #Extracted data files
 climate-data-from-ocean-ships/
 *.csv
+
+#Old scripts
+scripts/Old/
