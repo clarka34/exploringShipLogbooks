@@ -5,6 +5,7 @@ import pandas as pd
 import ipywidgets as widgets
 
 from IPython.display import display
+from sklearn.preprocessing import LabelEncoder
 
 def extract_logbook_data(desired_filename):
     """
@@ -73,3 +74,38 @@ def create_widget(df):
     button.on_click(on_button_clicked)
 
     return w
+
+
+class MultiColumnLabelEncoder:
+    def __init__(self,columns = None):
+        self.columns = columns
+
+    # Selects the columns that you would like to encode (if specified)
+    def fit(self,X,y=None):
+        return self
+
+    # Encodes each column and stores the encoded values
+    def transform(self,X):
+        '''
+        Transforms columns of X specified in self.columns using
+        LabelEncoder(). If no columns specified, transforms all
+        columns in X.
+        '''
+        output = X.copy()
+        encoding = pd.DataFrame(index=X.index,columns=X.columns)
+        print(output)
+        print(self.columns)
+        if self.columns is not None:
+            for col in self.columns:
+                encoding[col][0:len(LabelEncoder().fit(output[col]).classes_)] = LabelEncoder().fit(output[col]).classes_
+                output[col] = LabelEncoder().fit_transform(output[col])
+        else:
+            for col in output.columns:
+                encoding[col][0:len(LabelEncoder().fit(output[col]).classes_)] = LabelEncoder().fit(output[col]).classes_
+                output[col] = LabelEncoder().fit_transform(output[col])
+        encoding = encoding.dropna(axis=0, how='all')
+        return output, encoding
+
+    # Function call to combine both the fit and transform functions above    
+    def fit_transform(self,X,y=None):
+        return self.fit(X,y).transform(X)
