@@ -22,3 +22,17 @@ class LogbookClassifier:
         mentions_slaves = wc.count_key_words(logbook_data,
                                                 text_columns, slave_words)
         slave_index = mentions_slaves[(mentions_key_words['ContainsKeyWord'] != 0)].index
+
+        self.slave_logs = self.logbook_data.loc[slave_index.values]
+
+    def separate_voyages(self):
+        pass
+
+    def encode_data(self):
+        pass
+
+    def fit_classifier(self):
+        pass
+
+    def predict(self, voyages):
+        pass
