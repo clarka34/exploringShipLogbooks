@@ -43,19 +43,15 @@ def isolate_columns(df, desired_columns):
     # Initializes list of all columns and then removes the desired columns
     # from the list
 
-    all_columns = df.columns.values.tolist()
-    drop_columns = []
-    for column in all_columns:
-        if column not in desired_columns:
-            drop_columns.append(column)
+    undesired_columns = determine_undesired_columns(df, desired_columns)
 
-    df.drop(drop_columns, axis = 1)
+    df = df.drop(undesired_columns, axis = 1)
 
     return df
 
-def remove_undesired_columns(df, desired_columns):
+def determine_undesired_columns(df, desired_columns):
     """
-    Removes undesired columns from the data set
+    Determines undesired columns from the data set
     Inputs:
     df -- dataframe containing logbook data
     desired_columns -- columns that user wants to user

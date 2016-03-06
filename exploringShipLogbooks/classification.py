@@ -17,9 +17,7 @@ class LogbookClassifier:
     def __init__(self):
         # extract data from zip file
         logbook_data = extract_logbook_data('CLIWOC15.csv')
-        print(type(logbook_data))
         logbook_data = isolate_columns(logbook_data, desired_columns)
-        #logbook_data = logbook_data.drop(undesired_columns, axis=1)
 
         # extract logs that mention slaves
         mentions_slaves = wc.count_key_words(logbook_data,
