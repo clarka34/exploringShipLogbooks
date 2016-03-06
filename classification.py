@@ -26,13 +26,28 @@ class LogbookClassifier:
         self.slave_logs = self.logbook_data.loc[slave_index.values]
 
     def separate_voyages(self):
+        """
+        Separate ship logs into individual voyages.
+
+        Creates new dataframe with rows as individual voyages, and columns with
+        the features of each voyage (that will be used for classification)
+        """
         pass
 
     def encode_data(self):
+        """
+        """
         pass
 
     def fit_classifier(self):
+        """
+        Fit training data to classifier.
+        """
         pass
 
     def predict(self, voyages):
-        pass
+        """
+        Predict class of remaining voyages.
+        """
+        for voyage in voyages:
+            pass
