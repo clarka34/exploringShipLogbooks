@@ -107,13 +107,18 @@ def clean_data(df):
 
     Ouput: df -- dataframe containing the cleaned data
     """
-
-    df['VoyageFrom'] = df['VoyageFrom'].astype(str).map(lambda x: x.lower().rstrip())
-    df['VoyageTo'] = df['VoyageTo'].astype(str).map(lambda x: x.lower().rstrip())
-    df['ShipName'] = df['ShipName'].astype(str).map(lambda x: x.lower().rstrip())
-    df['ShipType'] = df['ShipType'].astype(str).map(lambda x: x.lower().rstrip())
-    df['Company'] = df['Company'].astype(str).map(lambda x: x.lower().rstrip())
-    df['Nationality'] = df['Nationality'].astype(str).map(lambda x: x.lower().rstrip())
+    for column in list(df.columns.values):
+        try:
+            df[column] = df[column].astype(str).map(lambda x: x.lower().rstrip())
+        except:
+            pass
+    
+    #df['VoyageFrom'] = df['VoyageFrom'].astype(str).map(lambda x: x.lower().rstrip())
+    #df['VoyageTo'] = df['VoyageTo'].astype(str).map(lambda x: x.lower().rstrip())
+    #df['ShipName'] = df['ShipName'].astype(str).map(lambda x: x.lower().rstrip())
+    #df['ShipType'] = df['ShipType'].astype(str).map(lambda x: x.lower().rstrip())
+    #df['Company'] = df['Company'].astype(str).map(lambda x: x.lower().rstrip())
+    #df['Nationality'] = df['Nationality'].astype(str).map(lambda x: x.lower().rstrip())
     return df
 
 def label_encoder(column):
