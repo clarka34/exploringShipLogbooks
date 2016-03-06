@@ -21,10 +21,10 @@ def extract_logbook_data(desired_filename):
         file_handle = zf.open(desired_filename)
         return pd.read_csv(file_handle)
     except:
-        return 'Please enter valid filename.'
+        raise KeyError('Please enter valid filename.')
 
 
-def remove_undesired_columns(df, desired_columns):
+def isolate_columns(df, desired_columns):
     """
     Removes undesired columns from the data set
 
@@ -41,12 +41,13 @@ def remove_undesired_columns(df, desired_columns):
     # Initializes list of all columns and then removes the desired columns
     # from the list
 
-    undesired_columns = list(df.columns.values)
+    all_columns = df.columns.values.tolist()
 
-    for value in desired_columns:
-        undesired_columns.remove(value)
+    for column in all_columns:
+        if column not in desired_columns:
+            df.drop(column)
 
-    return undesired_columns
+    return df
 
 
 def create_widget(df):
@@ -83,7 +84,7 @@ class MultiColumnLabelEncoder:
 
     #Selects the columns that you would like to encode (if specified)
     # TODO: What does this function do?
-    
+
     def fit(self,X,y=None):
        return self
 

@@ -1,9 +1,8 @@
 # configuration for logbook data analysis
 
 # desired data columns for processing (will drop all other columns)
-desired_columns = list(np.array(['VoyageFrom', 'VoyageTo', 'ShipName',
-                                      'ShipType', 'Company', 'Nationality',
-                                      'WarsAndFights', 'Year']))
+desired_columns = ['VoyageFrom', 'VoyageTo', 'ShipName', 'ShipType', 'Company',
+                   'Nationality', 'WarsAndFights', 'Year']
 
 # columns containing logbook text (to search for mentions of slaves)
 text_columns = ['CargoMemo', 'LifeOnBoardMemo', 'OtherRem', 'EncRem']
