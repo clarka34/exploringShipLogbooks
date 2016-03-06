@@ -17,11 +17,12 @@ def extract_logbook_data(desired_filename):
     Output: pandas dataframe containing the file or error message
     """
     try:
-        zf = zipfile.ZipFile('./data/climate-data-from-ocean-ships.zip')
+        zf = zipfile.ZipFile('./exploringShipLogbooks/data/climate-data-from-ocean-ships.zip')
         file_handle = zf.open(desired_filename)
         return pd.read_csv(file_handle)
     except:
-        raise KeyError('Please enter valid filename.')
+        pass
+    #    raise KeyError('Please enter valid filename.')
 
 
 def isolate_columns(df, desired_columns):
@@ -45,7 +46,7 @@ def isolate_columns(df, desired_columns):
 
     for column in all_columns:
         if column not in desired_columns:
-            df.drop(column)
+            df.drop(column, axis = 1)
 
     return df
 
