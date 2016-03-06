@@ -55,7 +55,7 @@ class LogbookClassifier:
         try:
             self.slave_logs_enc
         except:
-            Raise('Must encode data before fitting classifier')
+            raise KeyError('Must encode data before fitting classifier')
 
         #self.classifier.fit(data, classes)
 
