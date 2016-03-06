@@ -17,22 +17,14 @@ class LogbookClassifier:
 
         logbook_data = extract_logbook_data('CLIWOC15.csv')
         undesired_columns = remove_undesired_columns(logbook_data, desired_columns)
-        self.logbook_data = logbook_data.drop(undesired_columns, axis=1)
+        logbook_data = logbook_data.drop(undesired_columns, axis=1)
 
         mentions_slaves = wc.count_key_words(logbook_data,
                                                 text_columns, slave_words)
         slave_index = mentions_slaves[(mentions_key_words['ContainsKeyWord'] != 0)].index
 
-        self.slave_logs = self.logbook_data.loc[slave_index.values]
-
-    def separate_voyages(self):
-        """
-        Separate ship logs into individual voyages.
-
-        Creates new dataframe with rows as individual voyages, and columns with
-        the features of each voyage (that will be used for classification)
-        """
-        pass
+        self.slave_logs = logbook_data.loc[slave_index.values]
+        self.unclassified_logs = logbook_data.loc[~(slave_index.values)]
 
     def encode_data(self):
         """
