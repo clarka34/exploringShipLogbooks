@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
-import .word_count as wc
+import word_count as wc
 from sklearn import preprocessing
 from sklearn.naive_bayes import MultinomialNB
 
-from .basic_utils import create_widget
-from .basic_utils import extract_logbook_data
-from .basic_utils import remove_undesired_columns
-from .basic_utils import MultiColumnLabelEncoder
+#from .basic_utils import create_widget
+#from .basic_utils import extract_logbook_data
+#from .basic_utils import remove_undesired_columns
+#from .basic_utils import MultiColumnLabelEncoder
 
 from .config import *
 

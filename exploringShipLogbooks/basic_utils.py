@@ -81,9 +81,11 @@ class MultiColumnLabelEncoder:
     def __init__(self,columns = None):
         self.columns = columns
 
-    # Selects the columns that you would like to encode (if specified)
+    #Selects the columns that you would like to encode (if specified)
+    # TODO: What does this function do?
+    
     def fit(self,X,y=None):
-        return self
+       return self
 
     # Encodes each column and stores the encoded values
     def transform(self,X):
@@ -95,8 +97,7 @@ class MultiColumnLabelEncoder:
         output = X.copy()
         output_one_hot = []
         encoding = pd.DataFrame(index=X.index,columns=X.columns)
-        print(output)
-        print(self.columns)
+
         # Encodes only the specified columns in the function call
         if self.columns is not None:
             for col in self.columns:
