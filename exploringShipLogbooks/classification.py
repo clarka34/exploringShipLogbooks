@@ -7,7 +7,6 @@ from sklearn.naive_bayes import MultinomialNB
 from .basic_utils import create_widget
 from .basic_utils import extract_logbook_data
 from .basic_utils import isolate_columns
-from .basic_utils import MultiColumnLabelEncoder
 
 from .config import *
 
