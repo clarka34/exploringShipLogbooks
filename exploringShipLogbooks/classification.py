@@ -24,7 +24,7 @@ class LogbookClassifier:
         # extract logs that mention slaves
         mentions_slaves = wc.count_key_words(logbook_data,
                                                 text_columns, slave_words)
-        slave_index = mentions_slaves[(mentions_key_words['ContainsKeyWord'] != 0)].index
+        slave_index = mentions_slaves[(mentions_slaves['ContainsKeyWord'] != 0)].index
 
         self.slave_logs = logbook_data.loc[slave_index.values]
 
@@ -34,7 +34,7 @@ class LogbookClassifier:
 
         # all remaining logs are unclassified (need to also remove non-slave log
         # training data indexes)
-        self.unclassified_logs = logbook_data.loc[~(slave_index.values)]
+        self.unclassified_logs = logbook_data.drop(slave_index)
 
         # initialize multinomial naive bayes classifier
         self.classifier = MultinomialNB()

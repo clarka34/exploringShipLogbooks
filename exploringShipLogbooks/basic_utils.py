@@ -43,10 +43,12 @@ def isolate_columns(df, desired_columns):
     # from the list
 
     all_columns = df.columns.values.tolist()
-
+    drop_columns = []
     for column in all_columns:
         if column not in desired_columns:
-            df.drop(column, axis = 1)
+            drop_columns.append(column)
+
+    df.drop(drop_columns, axis = 1)
 
     return df
 
