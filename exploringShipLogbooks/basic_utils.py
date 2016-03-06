@@ -78,46 +78,22 @@ def create_widget(df):
 
     return w
 
+def label_encoder(column):
+    return LabelEncoder().fit_transform(column)
 
-class MultiColumnLabelEncoder:
-    def __init__(self,columns = None):
-        self.columns = columns
+def one_hot_encoder(column):
+    return OneHotEncoder().fit_transform(label_encoder(column).reshape(-1,1)).toarray()
 
-    #Selects the columns that you would like to encode (if specified)
-    # TODO: What does this function do?
+def encode_data(df):
+    '''
+    Transforms all columns of the dataframe specified using
+    LabelEncoder() and OneHotEncoder().
+    '''
+    encoded_data = []
 
-    def fit(self,X,y=None):
-       return self
+    # Encodes only the specified columns in the function call
+    for col in df.columns:
+        encoded_data.append(one_hot_encoder(df[col]))
 
-    # Encodes each column and stores the encoded values
-    def transform(self,X):
-        '''
-        Transforms columns of X specified in self.columns using
-        LabelEncoder(). If no columns specified, transforms all
-        columns in X.
-        '''
-        output = X.copy()
-        output_one_hot = []
-        encoding = pd.DataFrame(index=X.index,columns=X.columns)
-
-        # Encodes only the specified columns in the function call
-        if self.columns is not None:
-            for col in self.columns:
-                encoding[col][0:len(LabelEncoder().fit(output[col]).classes_)] = LabelEncoder().fit(output[col]).classes_
-                output[col] = LabelEncoder().fit_transform(output[col])
-                output_one_hot.append(OneHotEncoder().fit_transform(output[col].reshape(-1,1)).toarray())
-
-        # Encodes all columns in the dataframe
-        else:
-            for col in output.columns:
-                encoding[col][0:len(LabelEncoder().fit(output[col]).classes_)] = LabelEncoder().fit(output[col]).classes_
-                output[col] = LabelEncoder().fit_transform(output[col])
-                output_one_hot.append(OneHotEncoder().fit_transform(output[col].reshape(-1,1)).toarray())
-
-        encoding = encoding.dropna(axis=0, how='all')
-        output_one_hot = np.hstack(output_one_hot)
-        return output, output_one_hot, encoding
-
-    # Function call to combine both the fit and transform functions above
-    def fit_transform(self,X,y=None):
-        return self.fit(X,y).transform(X)
+    encoded_data = np.hstack(encoded_data)
+    return encoded_data
