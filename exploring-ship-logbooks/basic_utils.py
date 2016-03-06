@@ -6,6 +6,7 @@ import ipywidgets as widgets
 
 from IPython.display import display
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OneHotEncoder
 
 def extract_logbook_data(desired_filename):
     """
@@ -92,20 +93,28 @@ class MultiColumnLabelEncoder:
         columns in X.
         '''
         output = X.copy()
+        output_one_hot = []
         encoding = pd.DataFrame(index=X.index,columns=X.columns)
         print(output)
         print(self.columns)
+        # Encodes only the specified columns in the function call
         if self.columns is not None:
             for col in self.columns:
                 encoding[col][0:len(LabelEncoder().fit(output[col]).classes_)] = LabelEncoder().fit(output[col]).classes_
                 output[col] = LabelEncoder().fit_transform(output[col])
+                output_one_hot.append(OneHotEncoder().fit_transform(output[col].reshape(-1,1)).toarray())
+
+        # Encodes all columns in the dataframe
         else:
             for col in output.columns:
                 encoding[col][0:len(LabelEncoder().fit(output[col]).classes_)] = LabelEncoder().fit(output[col]).classes_
                 output[col] = LabelEncoder().fit_transform(output[col])
-        encoding = encoding.dropna(axis=0, how='all')
-        return output, encoding
+                output_one_hot.append(OneHotEncoder().fit_transform(output[col].reshape(-1,1)).toarray())
 
-    # Function call to combine both the fit and transform functions above    
+        encoding = encoding.dropna(axis=0, how='all')
+        output_one_hot = np.hstack(output_one_hot)
+        return output, output_one_hot, encoding
+
+    # Function call to combine both the fit and transform functions above
     def fit_transform(self,X,y=None):
         return self.fit(X,y).transform(X)
