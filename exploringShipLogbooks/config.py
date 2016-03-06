@@ -1,7 +1,7 @@
 # configuration for logbook data analysis
 
 # desired data columns for processing (will drop all other columns)
-desired_columns = ['VoyageFrom', 'VoyageTo', 'ShipName', 'ShipType', 'Company',
+desired_columns = ['VoyageFrom', 'VoyageTo', 'ShipType', 'Company',
                    'Nationality', 'WarsAndFights', 'Year']
 
 # columns containing logbook text (to search for mentions of slaves)
