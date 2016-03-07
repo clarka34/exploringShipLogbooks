@@ -49,7 +49,7 @@ def isolate_columns(df, desired_columns):
 
     return df
 
-def determine_undesired_columns(df, desired_columns):
+def remove_undesired_columns(df, desired_columns):
     """
     Determines undesired columns from the data set
     Inputs:
