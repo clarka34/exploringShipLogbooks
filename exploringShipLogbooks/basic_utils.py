@@ -112,7 +112,7 @@ def clean_data(df):
             df[column] = df[column].astype(str).map(lambda x: x.lower().rstrip())
         except:
             pass
-    
+
     #df['VoyageFrom'] = df['VoyageFrom'].astype(str).map(lambda x: x.lower().rstrip())
     #df['VoyageTo'] = df['VoyageTo'].astype(str).map(lambda x: x.lower().rstrip())
     #df['ShipName'] = df['ShipName'].astype(str).map(lambda x: x.lower().rstrip())
@@ -151,8 +151,9 @@ def encode_data(df):
     '''
     encoded_data = []
     encoder = []
-    # Encodes only the specified columns in the function call
+
     for col in df.columns:
+        # if type is string?
         encoded_data.append(one_hot_encoder(df[col]))
         encoder.append(label_encoder_key(df[col]))
 
