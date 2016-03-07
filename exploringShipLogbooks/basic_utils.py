@@ -117,12 +117,6 @@ def clean_data(df):
         except:
             pass
 
-    #df['VoyageFrom'] = df['VoyageFrom'].astype(str).map(lambda x: x.lower().rstrip())
-    #df['VoyageTo'] = df['VoyageTo'].astype(str).map(lambda x: x.lower().rstrip())
-    #df['ShipName'] = df['ShipName'].astype(str).map(lambda x: x.lower().rstrip())
-    #df['ShipType'] = df['ShipType'].astype(str).map(lambda x: x.lower().rstrip())
-    #df['Company'] = df['Company'].astype(str).map(lambda x: x.lower().rstrip())
-    #df['Nationality'] = df['Nationality'].astype(str).map(lambda x: x.lower().rstrip())
     return df
 
 def label_encoder(column):
@@ -182,3 +176,22 @@ def encode_data_df(df):
     encoded_df = pd.DataFrame(encoded_data, columns = encoder)
 
     return encoded_df
+
+def isloate_training_data(df, criteria):
+    """
+    Isolates data from the data frame (df) that meets criteria
+
+    Criteria is a dictionary with key name of the column name,
+    and a list of permissible values
+
+    i.e {'Nationality":['dutch', 'french']} would isolate all dutch
+    and french logs.
+    """
+
+    for col in criteria:
+        desired_vals = criteria[col]
+        print(desired_vals)
+        mask = df[col].isin(desired_vals)
+        df = df.ix[mask]
+
+    return df,mask
