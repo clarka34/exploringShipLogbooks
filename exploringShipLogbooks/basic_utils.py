@@ -43,7 +43,7 @@ def isolate_columns(df, desired_columns):
     # Initializes list of all columns and then removes the desired columns
     # from the list
 
-    undesired_columns = determine_undesired_columns(df, desired_columns)
+    undesired_columns = remove_undesired_columns(df, desired_columns)
 
     df = df.drop(undesired_columns, axis = 1)
 
@@ -66,7 +66,10 @@ def remove_undesired_columns(df, desired_columns):
     undesired_columns = list(df.columns.values)
 
     for value in desired_columns:
-        undesired_columns.remove(value)
+        try:
+            undesired_columns.remove(value)
+        except:
+            raise KeyError(value, " is not a column in the dataframe")
 
     return undesired_columns
 
