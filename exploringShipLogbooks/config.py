@@ -13,4 +13,7 @@ slave_words = ['slave',  'slaves', 'slaaf', 'slaven', 'meisjesslaaf', 'manslaaf'
                'slavenmeid', 'vrouwslaaf', 'vrouwslaven', 'slavenhandel', 'slaaf',
                'esclavo', 'esclavos', 'esclave', 'esclaves']
 
-non_slave_ships = ['assurance', 'san carlos', 'san perpetua']
+non_slave_ships = ['assurance', 'san carlos', 'san perpetua', 'severn',
+                   'la atrevida', 'el cuervo', 'el carlos real', 'greyhound',
+                   'jason', 'la perle', 'la leopard', 'scipio',
+                   'princes louisa', 'pollux']
