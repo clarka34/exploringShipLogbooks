@@ -49,7 +49,7 @@ def isolate_columns(df, desired_columns):
 
     return df
 
-def determine_undesired_columns(df, desired_columns):
+def remove_undesired_columns(df, desired_columns):
     """
     Determines undesired columns from the data set
     Inputs:
@@ -112,7 +112,7 @@ def clean_data(df):
             df[column] = df[column].astype(str).map(lambda x: x.lower().rstrip())
         except:
             pass
-    
+
     #df['VoyageFrom'] = df['VoyageFrom'].astype(str).map(lambda x: x.lower().rstrip())
     #df['VoyageTo'] = df['VoyageTo'].astype(str).map(lambda x: x.lower().rstrip())
     #df['ShipName'] = df['ShipName'].astype(str).map(lambda x: x.lower().rstrip())
