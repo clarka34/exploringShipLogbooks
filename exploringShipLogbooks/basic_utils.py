@@ -112,7 +112,8 @@ def clean_data(df):
     """
     for column in list(df.columns.values):
         try:
-            df[column] = df[column].astype(str).map(lambda x: x.lower().rstrip())
+            if not df[column].dtype('int64'):
+                df[column] = df[column].astype(str).map(lambda x: x.lower().rstrip())
         except:
             pass
 
@@ -157,7 +158,10 @@ def encode_data(df):
 
     for col in df.columns:
         # if type is string?
-        encoded_data.append(one_hot_encoder(df[col]))
+        if df[col].dtype('int64'):
+            encoded_data.append(df[col])
+        else:
+            encoded_data.append(one_hot_encoder(df[col]))
         encoder.append(label_encoder_key(df[col]))
 
     encoded_data = np.hstack(encoded_data)
