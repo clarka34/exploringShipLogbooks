@@ -25,7 +25,6 @@ def extract_logbook_data(desired_filename):
         pass
     #    raise KeyError('Please enter valid filename.')
 
-
 def isolate_columns(df, desired_columns):
     """
     Removes undesired columns from the data set
@@ -112,7 +111,7 @@ def clean_data(df):
     """
     for column in list(df.columns.values):
         try:
-            if not df[column].dtypes == 'int':
+            if not ((df[column].dtypes == 'int') or (df[column].dtypes == 'float')):
                 df[column] = df[column].astype(str).map(lambda x: x.lower().rstrip())
         except:
             pass
@@ -152,7 +151,7 @@ def encode_data(df):
 
     for col in df.columns:
         # if type is string?
-        if df[col].dtype == 'int':
+        if (df[col].dtype == 'int') or (df[col].dtype == 'float'):
             encoded_data.append(np.array([df[col]]).T)
             encoder.append(col)
         else:
