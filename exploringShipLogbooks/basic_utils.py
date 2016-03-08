@@ -190,7 +190,6 @@ def isloate_training_data(df, criteria):
 
     for col in criteria:
         desired_vals = criteria[col]
-        print(desired_vals)
         mask = df[col].isin(desired_vals)
         df = df.ix[mask]
 
