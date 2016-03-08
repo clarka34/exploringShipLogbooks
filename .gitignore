@@ -66,6 +66,7 @@ target/
 
 #Extracted data files
 climate-data-from-ocean-ships/
+*.h5
 
 #Old scripts
 scripts/Old/
