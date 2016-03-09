@@ -177,7 +177,7 @@ def encode_data_df(df):
 
     return encoded_df
 
-def isloate_training_data(df, criteria):
+def isolate_training_data(df, criteria):
     """
     Isolates data from the data frame (df) that meets criteria
 
