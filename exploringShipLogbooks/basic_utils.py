@@ -188,9 +188,20 @@ def isolate_training_data(df, criteria):
     and french logs.
     """
 
+    mask = [True] * len(df)
+    mask = pd.Series(mask)
     for col in criteria:
+        # clean relevant columns
+        try:
+            if not ((df[col].dtypes == 'int') or (df[col].dtypes == 'float')):
+                df[col] = df[col].astype(str).map(lambda x: x.lower().rstrip())
+        except:
+            pass
+        # find rows with desired values
         desired_vals = criteria[col]
-        mask = df[col].isin(desired_vals)
-        df = df.ix[mask]
+        mask_tmp = df[col].isin(desired_vals)
 
-    return df,mask
+        # update mask
+        mask = mask[mask_tmp]
+
+    return mask
