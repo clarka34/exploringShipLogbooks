@@ -68,6 +68,7 @@ target/
 climate-data-from-ocean-ships/
 *.h5
 */tastdb-exp-2010
+exploringShipLogbooks/data/*
 
 #Old scripts
 scripts/Old/
