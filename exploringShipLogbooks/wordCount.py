@@ -50,12 +50,9 @@ def count_key_words(data, columns, key_words):
 
     # format pandas dataframe with ship ID and whether there are any
     # mentions of key words (boolean)
-    mentions_key_words = pd.DataFrame.from_items([('ShipName', data['ShipName']),
-                                                  ('VoyageFrom', data['VoyageFrom']),
-                                                  ('VoyageTo', data['VoyageTo']),
-                                                  ('ContainsKeyWord', mentions_slaves)])
+    slave_mask = (pd.Series(mentions_slaves) != 0)
 
-    return mentions_key_words
+    return slave_mask
 
 
 def count_all_words(data, columns):
