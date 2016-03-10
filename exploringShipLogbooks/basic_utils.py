@@ -9,6 +9,7 @@ from IPython.display import display
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 
+
 def extract_logbook_data(desired_filename):
     """
     Fetch logbook data and extract trips as dataframe
@@ -22,8 +23,8 @@ def extract_logbook_data(desired_filename):
         file_handle = zf.open(desired_filename)
         return pd.read_csv(file_handle)
     except:
-        pass
-    #    raise KeyError('Please enter valid filename.')
+        raise KeyError('Please enter valid filename.')
+
 
 def isolate_columns(df, desired_columns):
     """
@@ -44,9 +45,10 @@ def isolate_columns(df, desired_columns):
 
     undesired_columns = remove_undesired_columns(df, desired_columns)
 
-    df = df.drop(undesired_columns, axis = 1)
+    df = df.drop(undesired_columns, axis=1)
 
     return df
+
 
 def remove_undesired_columns(df, desired_columns):
     """
@@ -83,10 +85,9 @@ def create_widget(df):
     Ouput:
     desired_columns -- columns that the user wants
     """
-    w = widgets.SelectMultiple(
-        description="Select desired columns",
-        options=list(df.columns.values)
-    )
+    w = widgets.SelectMultiple(description="Select desired columns",
+                               options=list(df.columns.values))
+
     display(w)
 
     button = widgets.Button(description="Done!")
@@ -99,6 +100,7 @@ def create_widget(df):
     button.on_click(on_button_clicked)
 
     return w
+
 
 def clean_data(df):
     """
@@ -118,11 +120,13 @@ def clean_data(df):
 
     return df
 
+
 def label_encoder(column):
     """
     Converts categorical data to numerical data
     """
     return LabelEncoder().fit_transform(column)
+
 
 def label_encoder_key(column):
     """
@@ -130,11 +134,13 @@ def label_encoder_key(column):
     """
     return LabelEncoder().fit(column).classes_
 
+
 def one_hot_encoder(column):
     """
     Converts numerical data to one hot encoded data
     """
     return OneHotEncoder().fit_transform(label_encoder(column).reshape(-1,1)).toarray()
+
 
 def encode_data(df):
     '''
@@ -162,6 +168,7 @@ def encode_data(df):
     encoder = np.hstack(encoder)
     return encoded_data, encoder
 
+
 def encode_data_df(df):
     '''
     Creates a pandas dataframe of the encoded date with each column labelled
@@ -173,9 +180,10 @@ def encode_data_df(df):
 
     encoded_data, encoder = encode_data(df)
 
-    encoded_df = pd.DataFrame(encoded_data, columns = encoder)
+    encoded_df = pd.DataFrame(encoded_data, columns=encoder)
 
     return encoded_df
+
 
 def isolate_training_data(df, criteria):
     """
