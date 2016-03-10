@@ -22,5 +22,5 @@ non_slave_ships = ['assurance', 'san carlos', 'san perpetua', 'severn',
 
 # add dict for slave voyage logs columns
 slave_voyage_conversions = {'portdep': 'VoyageFrom', 'portret': 'VoyageTo',
-                            'rig': 'ShipType', 'national': 'Year',
+                            'rig': 'ShipType', 'national': 'Nationality',
                             'yeardep': 'Year'}
