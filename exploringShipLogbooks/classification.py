@@ -59,10 +59,10 @@ class LogbookClassifier:
 
         # clean slave_voyage logs to have columns that match cliwoc
         slave_voyage_desired_cols = list(slave_voyage_conversions.keys())
-        slave_voyage_logs = isolate_columns(self.slave_voyage_logs,
+        self.slave_voyage_logs = isolate_columns(self.slave_voyage_logs,
                                             slave_voyage_desired_cols)
 
-        slave_voyage_logs.rename(columns=slave_voyage_conversions, inplace=True)
+        self.slave_voyage_logs.rename(columns=slave_voyage_conversions, inplace=True)
 
         cliwoc_indices = pd.Series(0, index=self.cliwoc_data.index)
         slave_voyages_indices = pd.Series(0, index=(range(len(self.slave_voyage_logs)) + (self.cliwoc_data.tail(1).index[0]+1)))
