@@ -113,8 +113,10 @@ def clean_data(df):
     """
     for column in list(df.columns.values):
         try:
-            if not ((df[column].dtypes == 'int') or (df[column].dtypes == 'float')):
-                df[column] = df[column].astype(str).map(lambda x: x.lower().rstrip())
+            if not ((df[column].dtypes == 'int') or
+                    (df[column].dtypes == 'float')):
+                df[column] = df[column].astype(str).map(lambda x: x.lower().
+                                                        rstrip())
         except:
             pass
 
@@ -139,7 +141,8 @@ def one_hot_encoder(column):
     """
     Converts numerical data to one hot encoded data
     """
-    return OneHotEncoder().fit_transform(label_encoder(column).reshape(-1,1)).toarray()
+    return OneHotEncoder().fit_transform(label_encoder(column).
+                                         reshape(-1, 1)).toarray()
 
 
 def encode_data(df):
