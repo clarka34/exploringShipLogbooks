@@ -1,6 +1,5 @@
-# Import modules needed for the following functions
 import zipfile
-
+import warnings
 import numpy as np
 import pandas as pd
 import ipywidgets as widgets
@@ -70,7 +69,7 @@ def remove_undesired_columns(df, desired_columns):
         try:
             undesired_columns.remove(value)
         except:
-            raise KeyError(value, " is not a column in the dataframe")
+            warnings.warn('Column not found')
 
     return undesired_columns
 
