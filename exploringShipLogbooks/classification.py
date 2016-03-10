@@ -7,6 +7,7 @@ from sklearn.naive_bayes import MultinomialNB
 from .basic_utils import extract_logbook_data
 from .basic_utils import isolate_columns
 from .basic_utils import isolate_training_data
+from .basic_utils import clean_data
 
 from .config import *
 
@@ -33,17 +34,33 @@ class LogbookClassifier:
                   'voyages logs (slave_voyages).')
 
     def find_logs_that_mention_slaves(self):
-        slave_mask = wc.count_key_words(self.cliwoc_data, text_columns, slave_words)
+        self.slave_mask = wc.count_key_words(self.cliwoc_data, text_columns, slave_words)
 
     def find_training_data(self, criteria):
         """
 
         """
-        mask = isolate_training_data(self.cliwoc_data, criteria)
+        self.training_mask = isolate_training_data(self.cliwoc_data, criteria)
 
-        return mask
+    def encode_ship_names(self):
+        label_encoding = preprocessing.LabelEncoder().fit(self.cliwoc_data['LogbookIdent']).classes_
+        self.cliwoc_data['LogbookIdent'] = preprocessing.LabelEncoder().fit_transform(self.cliwoc_data['LogbookIdent'])
 
     def join_data(self):
+        self.cliwoc_data['slave_logs'] = np.zeros(len(self.cliwoc_data))
+        slave_log_locations = self.cliwoc_data['LogbookIdent'].isin(list(self.cliwoc_data['LogbookIdent']
+                                                                         [self.slave_mask].unique()))
+
+        # cliwoc data (unclassified) = 0
+        # cliwoc_data (no slaves) = 1
+        # cliwoc_data (slaves) = 2
+        # slave voyages data = 3
+        self.cliwoc_data.loc[self.training_mask,'slave_logs'] = 1
+        self.cliwoc_data.loc[slave_log_locations,'slave_logs'] = 2
+
+        self.cliwoc_data = self.cliwoc_data.sort_values('LogbookIdent', ascending=True)
+        self.cliwoc_data = self.cliwoc_data.drop_duplicates('LogbookIdent')
+        self.cliwoc_data = self.cliwoc_data.set_index('LogbookIdent')
 
         # isolate desired columns from cliwoc data
         self.cliwoc_data = isolate_columns(self.cliwoc_data, desired_columns)
@@ -63,13 +80,13 @@ class LogbookClassifier:
                                             slave_voyage_desired_cols)
 
         self.slave_voyage_logs.rename(columns=slave_voyage_conversions, inplace=True)
-
-        cliwoc_indices = pd.Series(0, index=self.cliwoc_data.index)
-        slave_voyages_indices = pd.Series(0, index=(range(len(self.slave_voyage_logs)) + (self.cliwoc_data.tail(1).index[0]+1)))
+        self.slave_voyage_logs['slave_logs'] = 3
+        slave_voyage_indices = range(len(self.slave_voyage_logs)) + (self.cliwoc_data.tail(1).index[0]+1)
+        self.slave_voyage_logs = self.slave_voyage_logs.set_index(slave_voyage_indices)
 
         self.all_data = pd.concat([self.cliwoc_data, self.slave_voyage_logs], ignore_index=True)
+        self.all_data = clean_data(self.all_data)
 
-        return cliwoc_indices, slave_voyages_indices
 
     def encode_data(self):
         # this will use the encoder class.
