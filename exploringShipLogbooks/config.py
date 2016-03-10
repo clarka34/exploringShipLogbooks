@@ -19,3 +19,8 @@ non_slave_ships = ['assurance', 'san carlos', 'san perpetua', 'severn',
                    'la atrevida', 'el cuervo', 'el carlos real', 'greyhound',
                    'jason', 'la perle', 'la leopard', 'scipio',
                    'princes louisa', 'pollux']
+
+# add dict for slave voyage logs columns
+slave_voyage_conversions = {'portdep': 'VoyageFrom', 'portret': 'VoyageTo',
+                            'rig': 'ShipType', 'national': 'Year',
+                            'yeardep': 'Year'}

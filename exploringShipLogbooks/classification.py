@@ -4,9 +4,9 @@ from . import wordCount as wc
 from sklearn import preprocessing
 from sklearn.naive_bayes import MultinomialNB
 
-from .basic_utils import create_widget
 from .basic_utils import extract_logbook_data
 from .basic_utils import isolate_columns
+from .basic_utils import isolate_training_data
 
 from .config import *
 
@@ -14,52 +14,63 @@ from .config import *
 class LogbookClassifier:
 
     def __init__(self):
-        # extract data from zip file
-        logbook_data = extract_logbook_data('CLIWOC15.csv')
-        logbook_data = isolate_columns(logbook_data, desired_columns)
+        self.classifier = MultinomialNB(alpha=1.0,
+                                        class_prior=None,
+                                        fit_prior=True)
 
-        # extract logs that mention slaves
-        mentions_slaves = wc.count_key_words(logbook_data,
-                                                text_columns, slave_words)
-        slave_index = mentions_slaves[(mentions_slaves['ContainsKeyWord'] != 0)].index
+    def load_data(self, data_sets):
 
-        self.slave_logs = logbook_data.loc[slave_index.values]
+        if 'cliwoc' in data_sets:
+            self.cliwoc_data = extract_logbook_data('CLIWOC15.csv')
 
-        # temporarily using first 1000 logs as non-slave training set,
-        # will replace this with something that actually makes sense
-        self.not_slave_logs = logbook_data[:1000]
+        if 'slave_voyages' in data_sets:
+            file_name = '/data/tastdb-exp-2010'
+            self.slave_voyage_logs = pd.read_pickle(file_name)
 
-        # all remaining logs are unclassified (need to also remove non-slave log
-        # training data indexes)
-        self.unclassified_logs = logbook_data.drop(slave_index)
+        if 'slave_voyages' not in data_sets and 'cliwoc' not in data_sets:
+            print('Warning: no data loaded. Currently data extraction is',
+                  ' only implemented for cliwoc15 data (cliwoc) and slave',
+                  ' voyages logs (slave_voyages).')
 
-        # initialize multinomial naive bayes classifier
-        self.classifier = MultinomialNB()
+    def find_logs_that_mention_slaves(self):
+        slave_mask = wc.count_key_words(cliwoc_data, text_columns, slave_words)
 
-
-    def encode_data(self):
+    def find_training_data(criteria):
         """
-        """
-        encoder = MultiColumnLabelEncoder()
-        _, self.slave_logs_enc, _ = MultiColumnLabelEncoder.transform(self.slave_logs)
-        _, self.not_slave_logs_enc, _ = MultiColumnLabelEncoder.transform(self.not_slave_logs)
-        _, self.unclassified_logs_enc, _ = MultiColumnLabelEncoder.transform(self.unclassified_logs)
 
-    def fit_classifier(self):
         """
-        Fit training data to classifier.
-        """
-        try:
-            self.slave_logs_enc
-        except:
-            raise KeyError('Must encode data before fitting classifier')
+        mask = isolate_training_data(cliwoc_data, criteria)
 
-        #self.classifier.fit(data, classes)
+        return mask
 
+    def join_data(self):
 
-    def predict(self):
-        """
-        Predict class of remaining voyages.
-        """
-        data = ''
-        self.classifier.predict(data)
+        # isolate desired columns from cliwoc data
+        self.cliwoc_data = isolate_columns(cliwoc_data, desired_columns)
+
+        # drop slave_voyage_logs with empty year column
+        year_ind = ~(self.slave_voyage_logs['yeardep'].isnull())
+        self.slave_voyage_logs = self.slave_voyage_logs[year_ind]
+
+        # drop slave_voyage data from before beginning of cliwoc data
+        ind = (slave_voyage_logs['yeardep'] > cliwoc_data['Year'].min()) \
+            & (slave_voyage_logs['yeardep'] < cliwoc_data['Year'].max())
+        slave_voyage_logs = slave_voyage_logs[ind]
+
+        # clean slave_voyage logs to have columns that match cliwoc
+        slave_voyage_desired_cols = list(slave_voyage_conversions.keys())
+        slave_voyage_logs = isolate_columns(slave_voyage_logs,
+                                            slave_voyage_desired_cols)
+
+        slave_voyage_logs.rename(columns=slave_voyage_conversions,
+                                 inplace=True)
+
+        cliwoc_data_indices = pd.Series(self.cliwoc_data.index)
+
+        slave_data_indices = pd.Series((range(len(self.slave_voyage_logs))
+                                        + (self.cliwoc_data.tail(1).index[0]+1)))
+
+        self.all_data = all_data = pd.concat([cliwoc_data, slave_voyage_logs],
+                                             ignore_index=True)
+
+        return cliwoc_indices, slave_voyages_indices
