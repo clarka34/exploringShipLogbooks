@@ -3,7 +3,8 @@
 # desired data columns for processing (will drop all other columns)
 # desired_columns = ['VoyageFrom', 'VoyageTo', 'ShipType', 'Company',
 #                    'ShipName', 'Nationality', 'WarsAndFights', 'Year']
-desired_columns = ['VoyageFrom', 'VoyageTo', 'ShipType', 'Nationality', 'Year']
+desired_columns = ['VoyageFrom', 'VoyageTo', 'ShipType', 'Nationality',
+                   'Year', 'slave_logs']
 
 # columns containing logbook text (to search for mentions of slaves)
 text_columns = ['CargoMemo', 'LifeOnBoardMemo', 'OtherRem', 'EncRem']
