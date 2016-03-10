@@ -193,14 +193,14 @@ def isolate_training_data(df, criteria):
     Isolates data from the data frame (df) that meets criteria
 
     Criteria is a dictionary with key name of the column name,
-    and a list of permissible values
+    and a list of permissible values.
+
+    NOTE: currently only works for one column name at a time
 
     i.e {'Nationality":['dutch', 'french']} would isolate all dutch
     and french logs.
     """
 
-    mask = [True] * len(df)
-    mask = pd.Series(mask)
     for col in criteria:
         # clean relevant columns
         try:
@@ -210,9 +210,6 @@ def isolate_training_data(df, criteria):
             pass
         # find rows with desired values
         desired_vals = criteria[col]
-        mask_tmp = df[col].isin(desired_vals)
-
-        # update mask
-        mask = mask[mask_tmp]
+        mask = df[col].isin(desired_vals)
 
     return mask
