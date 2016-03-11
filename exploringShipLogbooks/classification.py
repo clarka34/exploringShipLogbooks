@@ -8,6 +8,7 @@ from .basic_utils import extract_logbook_data
 from .basic_utils import isolate_columns
 from .basic_utils import isolate_training_data
 from .basic_utils import clean_data
+from .basic_utils import encode_data_df
 
 from .config import *
 
@@ -90,7 +91,7 @@ class LogbookClassifier:
 
     def encode_data(self):
         # this will use the encoder class.
-        pass
+        self.all_data = encode_data_df(self.all_data)
 
     def fit_classifier(self, masks, classes):
         # convert to np array
