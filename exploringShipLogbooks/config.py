@@ -19,7 +19,8 @@ slave_words = ['slave',  'slaves', 'slaaf', 'slaven', 'meisjesslaaf',
 non_slave_ships = ['assurance', 'san carlos', 'san perpetua', 'severn',
                    'la atrevida', 'el cuervo', 'el carlos real', 'greyhound',
                    'jason', 'la perle', 'la leopard', 'scipio',
-                   'princes louisa', 'pollux']
+                   'princes louisa', 'pollux', 'audaz', 'laborde', 'vlieg',
+                   'cadmus', 'polanen', 'middleburg', 'princes carolina', 'nymphe', 'prins frederik', 'colchester']
 
 # add dict for slave voyage logs columns
 slave_voyage_conversions = {'portdep': 'VoyageFrom', 'portret': 'VoyageTo',
