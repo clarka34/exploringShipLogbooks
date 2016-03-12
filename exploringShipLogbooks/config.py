@@ -19,7 +19,7 @@ slave_words = ['slave',  'slaves', 'slaaf', 'slaven', 'meisjesslaaf',
 non_slave_ships = ['assurance', 'san carlos', 'san perpetua', 'severn',
                    'la atrevida', 'el cuervo', 'el carlos real', 'greyhound',
                    'jason', 'la perle', 'la leopard', 'scipio',
-                   'princes louisa', 'pollux', 'audaz', 'laborde', 'vlieg',
+                   'princes louisa', 'audaz', 'laborde', 'vlieg',
                    'cadmus', 'polanen', 'middleburg', 'princes carolina',
                    'nymphe', 'prins frederik', 'colchester']
 
