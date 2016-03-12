@@ -6,10 +6,10 @@ import pandas as pd
 
 from fuzzywuzzy import process
 
-from .config import fuzz_threshold
+from .config import *
 
 
-def finding_fuzzy_matches(slave_log_values, all_log_values, slave_log_values):
+def finding_fuzzy_matches(all_log_values, slave_log_values):
     matching_name = {}
 
     for ind, unique in enumerate(all_log_values):
@@ -47,7 +47,7 @@ def matching_values(my_dict, fuzzy_df):
     return fuzzy_df
 
 
-def building_fuzzy_dict(fuzzy_df):
+def building_fuzzy_dict(fuzzy_df, slave_log_values):
     alist = []
     for count in fuzzy_df['count'].unique():
         s_ind = fuzzy_df['log_values'][fuzzy_df['count'] ==
@@ -80,8 +80,7 @@ def fuzzy_wuzzy_classification(df, column):
     fuzzy_df['count'] = fuzzy_df['count'].astype(int)
 
     # create dictionary of fuzzy matches
-    my_dict = inding_fuzzy_matches(slave_log_values,
-                                   all_log_values, slave_logs)
+    my_dict = finding_fuzzy_matches(all_log_values, slave_log_values)
 
     # filter this dictionary to only include matches above a certain threshold
     my_dict = deleting_matches_below_threshold(fuzz_threshold, my_dict)
@@ -93,8 +92,9 @@ def fuzzy_wuzzy_classification(df, column):
     fuzzy_df = fuzzy_df[(fuzzy_df['count'] != 0)]
 
     # build the dictionary to merge the values in the original dataframe
-    fuzzy_dict = building_fuzzy_dict(fuzzy_df)
+    fuzzy_dict = building_fuzzy_dict(fuzzy_df, slave_log_values)
 
-    df[column] = df[column].replace(fuzzy_dict)
+    if any(fuzzy_dict):
+        df[column] = df[column].replace(fuzzy_dict)
 
-return df
+    return df
