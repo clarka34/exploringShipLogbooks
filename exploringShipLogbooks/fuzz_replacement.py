@@ -6,6 +6,8 @@ import pandas as pd
 
 from fuzzywuzzy import process
 
+from .config import fuzz_threshold
+
 
 def finding_fuzzy_matches(slave_log_values, all_log_values, slave_log_values):
     matching_name = {}
@@ -82,7 +84,7 @@ def fuzzy_wuzzy_classification(df, column):
                                    all_log_values, slave_logs)
 
     # filter this dictionary to only include matches above a certain threshold
-    my_dict = deleting_matches_below_threshold(threshold, my_dict)
+    my_dict = deleting_matches_below_threshold(fuzz_threshold, my_dict)
 
     # update the count column to assign the same count to matching strings
     fuzzy_df = matching_values(my_dict, fuzzy_df)

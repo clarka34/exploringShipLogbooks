@@ -20,9 +20,13 @@ non_slave_ships = ['assurance', 'san carlos', 'san perpetua', 'severn',
                    'la atrevida', 'el cuervo', 'el carlos real', 'greyhound',
                    'jason', 'la perle', 'la leopard', 'scipio',
                    'princes louisa', 'pollux', 'audaz', 'laborde', 'vlieg',
-                   'cadmus', 'polanen', 'middleburg', 'princes carolina', 'nymphe', 'prins frederik', 'colchester']
+                   'cadmus', 'polanen', 'middleburg', 'princes carolina',
+                   'nymphe', 'prins frederik', 'colchester']
 
 # add dict for slave voyage logs columns
 slave_voyage_conversions = {'portdep': 'VoyageFrom', 'portret': 'VoyageTo',
                             'rig': 'ShipType', 'national': 'Nationality',
                             'yeardep': 'Year'}
+
+# add value to use with the fuzzywuzzy threshold
+fuzz_threshold = 60
