@@ -144,10 +144,11 @@ def one_hot_encoder(column):
                                          reshape(-1, 1)).toarray()
 
 
-def encode_data(df):
+def encode_data(df, classification_algorithm):
     '''
     Transforms all columns of the dataframe specified using LabelEncoder() and
-    OneHotEncoder().
+    OneHotEncoder(). Performs one hot encoding only if classification_algorithm
+    is naive_bayes. Otherwise, only LabelEncoder is used.
 
     Input: df -- dataframe containing the logbook data
 
@@ -163,8 +164,12 @@ def encode_data(df):
             encoded_data.append(np.array([df[col]]).T)
             encoder.append(col)
         else:
-            encoded_data.append(one_hot_encoder(df[col]))
-            encoder.append(label_encoder_key(df[col]))
+            if classification_algorithm == 'Decision Tree':
+                encoded_data.append(label_encoder(df[col]))
+                encoder.append(label_encoder_key(df[col]))
+            elif classification_algorithm == 'Naive Bayes':
+                encoded_data.append(one_hot_encoder(df[col]))
+                encoder.append(label_encoder_key(df[col]))
 
     encoded_data = np.hstack(encoded_data)
     encoder = np.hstack(encoder)
