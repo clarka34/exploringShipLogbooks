@@ -92,8 +92,16 @@ class LogbookClassifier:
     def encode_data(self):
         # this will use the encoder class.
         self.all_data = encode_data_df(self.all_data)
+        # drop NaNs
+        self.all_data['no_data'] = self.all_data['nan'].apply(lambda x: x.any(), axis=1).astype(int)
+        self.all_data = self.all_data.drop('nan', axis=1)
 
-    def fit_classifier(self, masks, classes):
+
+    def fit_classifier(self, indexes):
+        # indexes will be 1 and 3 with the current code (negative and positive
+        # training data, respectively)
+
+        classifier.fit(training_data[::,1::], classes)
         # convert to np array
         # join all masks and classes (i.e. pos and neg)
         # add what columns
