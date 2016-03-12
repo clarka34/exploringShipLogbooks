@@ -101,8 +101,8 @@ class LogbookClassifier:
 
         self.slave_voyage_logs.rename(columns=slave_voyage_conversions, inplace=True)
         self.slave_voyage_logs['slave_logs'] = 3
-        slave_voyage_indices = range(len(self.slave_voyage_logs)) + (self.cliwoc_data.tail(1).index[0]+1)
-        self.slave_voyage_logs = self.slave_voyage_logs.set_index(slave_voyage_indices)
+        self.slave_voyage_indices = range(len(self.slave_voyage_logs)) + (self.cliwoc_data.tail(1).index[0]+1)
+        self.slave_voyage_logs = self.slave_voyage_logs.set_index(self.slave_voyage_indices)
 
     def join_data(self):
 
@@ -132,8 +132,8 @@ class LogbookClassifier:
         self.validation_set_1 = self.all_data[self.all_data['slave_logs']==2]
 
         # reserve first 20% of slave_voyage_logs as validation set 2
-        validation_set_2_indices = range(slave_voyage_indices.min(),
-                                         slave_voyage_indices.min() + round(len(slave_voyage_indices)*.2))
+        validation_set_2_indices = range(self.slave_voyage_indices.min(),
+                                         self.slave_voyage_indices.min() + round(len(self.slave_voyage_indices)*.2))
         self.validation_set_2 = self.all_data.iloc[validation_set_2_indices]
 
         # extract training data for positive and negative
@@ -158,11 +158,11 @@ class LogbookClassifier:
         neg_rep = pd.concat([training_logs_neg]*repeat_multiplier)
         self.training_data = pd.concat([neg_rep, training_logs_pos], ignore_index=True)
 
-        del all_data
+        del self.all_data
 
     def fit_classifier(self):
         # convert to numpy array
-        columns = list(training_data.columns)
+        columns = list(self.training_data.columns)
         columns.remove('slave_logs')
         training_data_to_fit = self.training_data.as_matrix(columns)
 
