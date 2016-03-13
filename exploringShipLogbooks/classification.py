@@ -283,7 +283,26 @@ class LogbookClassifier:
             percent = (counts[key] / (len(predictions)) * 100)
             print(round(percent, 2), 'of data was classified as ', key)
 
-    def load_clean_and_classify(self, fuzz=False):
+    def export_data(self, save_filename='classifier_results.csv'):
+        """
+        Export results to be plotted in Fusion Tables google app.
+        """
+        # assign the classifier results to the cliwoc data frame
+        for val in self.unclassified_logs['slave_logs'].unique():
+            ind = self.unclassified_logs[self.unclassified_logs['slave_logs'] == val].index
+            self.cliwoc_data_all.loc[ind, 'slave_logs'] = val
+
+        # isolate the columns that we would like to save
+        columns = ['ShipName', 'ShipType', 'slave_logs',
+                  'Nationality', 'Year', 'Lat3', 'Lon3']
+        self.cliwoc_data_all = isolate_columns(self.cliwoc_data_all, columns)
+
+        # save the altered cliwoc dataframe to a csv file
+        self.cliwoc_data_all.to_csv(save_filename)
+
+        return
+
+    def load_clean_and_classify(self, fuzz=False, export_csv=True):
         """
         Perform all functions, and print status updates.
 
@@ -293,26 +312,40 @@ class LogbookClassifier:
         print("Loading data...")
         self.load_data()
         self.encode_ship_IDs()
+
         print("Finding ship logs that mention slaves...")
         self.find_logs_that_mention_slaves()
+
         print("Finding training data...")
         self.find_training_data({'ShipName': non_slave_ships})
+
         print("Cleaning data...")
         self.clean_and_sort_data()
+
         print("Joining data sets...")
         self.join_data()
+
         if fuzz:
             print("Matching similar string values with fuzzy wuzzy...")
             self.match_similar_words()
+
         print("Encoding data...")
         self.encode_data()
+
         print("Extracting training and validation data...")
         self.extract_data_sets()
+
         print("Fiting classifier...")
         self.fit_classifier()
+
         print("Validationg Classifier...")
         print()
         self.validate_classifier()
+
         print("Classifing unknown data...")
         print()
         self.classify()
+
+        if export_csv:
+            print("Exporting data...")
+            self.export_data()
