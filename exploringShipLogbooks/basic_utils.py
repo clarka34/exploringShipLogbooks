@@ -166,17 +166,17 @@ def encode_data(df, classification_algorithm):
         else:
             if classification_algorithm == 'Decision Tree':
                 encoded_data.append(label_encoder(df[col]))
-                encoder.append(label_encoder_key(df[col]))
             elif classification_algorithm == 'Naive Bayes':
                 encoded_data.append(one_hot_encoder(df[col]))
-                encoder.append(label_encoder_key(df[col]))
+
+            encoder.append(label_encoder_key(df[col]))
 
     encoded_data = np.hstack(encoded_data)
     encoder = np.hstack(encoder)
     return encoded_data, encoder
 
 
-def encode_data_df(df):
+def encode_data_df(df, classification_algorithm):
     '''
     Creates a pandas dataframe of the encoded date with each column labelled
 
@@ -185,7 +185,7 @@ def encode_data_df(df):
     Output: encoded_df -- dataframe containing the encoded data
     '''
 
-    encoded_data, encoder = encode_data(df)
+    encoded_data, encoder = encode_data(df, classification_algorithm)
 
     encoded_df = pd.DataFrame(encoded_data, columns=encoder)
 

@@ -5,6 +5,7 @@ from sklearn import preprocessing
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import tree
 import warnings
+import collections
 
 from .basic_utils import extract_logbook_data
 from .basic_utils import isolate_columns
@@ -164,9 +165,8 @@ class LogbookClassifier:
         # convert to numpy array
         columns = list(self.training_data.columns)
         columns.remove('slave_logs')
-        training_data_to_fit = self.training_data.as_matrix(columns)
 
-        self.classifier.fit(training_data_to_fit[::,1::], self.training_classes)
+        self.classifier.fit(self.training_data[columns], self.training_classes)
 
     def validate_classifier(self):
             validation_sets = [self.validation_set_1, self.validation_set_2]
@@ -174,28 +174,28 @@ class LogbookClassifier:
             for i, validation_set in enumerate(validation_sets):
                 columns = list(validation_set.columns)
                 columns.remove('slave_logs')
-                validation_set_matrix = validation_set.as_matrix(columns)
-                predictions = classifier.predict(validation_set_matrix[::,1::])
+                predictions = self.classifier.predict(validation_set[columns])
 
                 counts = collections.Counter(predictions)
-                percent_correct = (counts[expected_class]/(len(predictions))* 100)
+                print('validation set', i, ' results: ', counts)
+                #percent_correct = (counts[expected_class]/(len(predictions))* 100)
 
-                print('Validation set', i, ' was classified as', expected_class,
-                      round(percent_correct,2), '% of the time')
+                #print('Validation set', i, ' was classified as', expected_class,
+                #      round(percent_correct,2), '% of the time')
 
     def classify(self):
 
-        data_to_classify = self.unclassified_logs.copy()
+        #data_to_classify = self.unclassified_logs.copy()
 
 
         # convert to numpy and classify
         columns = list(data_to_classify.columns)
         columns.remove('slave_logs')
-        data_matrix = data_to_classify.as_matrix(columns)
-        predictions = classifier.predict(data_matrix[::,1::])
+        #data_matrix = data_to_classify.as_matrix(columns)
+        predictions = self.classifier.predict(self.unclassified_logs[columns])
 
         # revalue slave_log ID column to indicate classification
-        data_to_classify['slave_logs'] = predictions + 4
+        self.unclassified_logs['slave_logs'] = predictions + 4
 
         # print statstics
         counts = collections.Counter(predictions)
@@ -203,5 +203,3 @@ class LogbookClassifier:
         for key in counts:
             percent = (counts[key]/(len(predictions))* 100)
             print(round(percent, 2), 'of data was classified as ', key)
-
-        self.unclassified_logs = data_to_classify
