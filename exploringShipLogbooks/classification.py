@@ -76,7 +76,8 @@ class LogbookClassifier:
 
         Criteria is given as a dictionary with key as column name,
         and a list of desired values.
-        """"
+        """
+
         self.training_mask = isolate_training_data(self.cliwoc_data, criteria)
 
     def encode_ship_IDs(self):
@@ -281,3 +282,37 @@ class LogbookClassifier:
         for key in counts:
             percent = (counts[key] / (len(predictions)) * 100)
             print(round(percent, 2), 'of data was classified as ', key)
+
+    def load_clean_and_classify(self, fuzz=False):
+        """
+        Perform all functions, and print status updates.
+
+        Input: fuzz = boolean value, default is false. Fuzzy string matching will
+                      only be performed if fuzz = True.
+        """
+        print("Loading data...")
+        self.load_data()
+        self.encode_ship_IDs()
+        print("Finding ship logs that mention slaves...")
+        self.find_logs_that_mention_slaves()
+        print("Finding training data...")
+        self.find_training_data({'ShipName': non_slave_ships})
+        print("Cleaning data...")
+        self.clean_and_sort_data()
+        print("Joining data sets...")
+        self.join_data()
+        if fuzz:
+            print("Matching similar string values with fuzzy wuzzy...")
+            self.match_similar_words()
+        print("Encoding data...")
+        self.encode_data()
+        print("Extracting training and validation data...")
+        self.extract_data_sets()
+        print("Fiting classifier...")
+        self.fit_classifier()
+        print("Validationg Classifier...")
+        print()
+        self.validate_classifier()
+        print("Classifing unknown data...")
+        print()
+        self.classify()
