@@ -69,7 +69,7 @@ def matching_values(my_dict, fuzzy_df):
             y_mask = (fuzzy_df['log_values'] == y[0])
             if ((fuzzy_df.loc[key_mask, 'count'] == 0).values[0] and
                (fuzzy_df.loc[y_mask, 'count'] == 0).values[0]):
-                temp_count = fuzzy_df['count'].max()+1
+                temp_count = fuzzy_df['count'].max() + 1
                 fuzzy_df.loc[key_mask, 'count'] = temp_count
                 fuzzy_df.loc[y_mask, 'count'] = temp_count
             elif (fuzzy_df.loc[key_mask, 'count'] == 0).values[0]:
