@@ -80,29 +80,3 @@ def count_all_words(data, columns):
     word_count_pd.index = range(1, len(word_count_pd) + 1)
 
     return word_count_pd
-
-
-def slave_mentions_by_voyage(data, columns, key_words):
-    """
-    Finds the total number of logs that mention slave keywords for each unique
-    voyage (identified by ship name, starting location, and end location)
-    """
-
-    total_key_word_count, mentions_key_words = count_key_words(data, columns,
-                                                               key_words)
-
-    # find all unique voyages
-    all_ship_IDs = data['ShipName'] + ' ' + data['VoyageFrom'] + ' ' + data['VoyageTo']
-    ship_IDs = all_ship_IDs.unique()
-
-    log_mentions = []
-    for index, ship_ID in enumerate(ship_IDs):
-        ship_data = mentions_key_words[all_ship_IDs == ship_ID]
-        log_mentions.append(sum(ship_data['ContainsKeyWord']))
-
-    # create pandas dataframe
-    log_mentions_by_voyage = pd.DataFrame.from_items([('ShipID', ship_IDs),
-                                                      ('LogMentions',
-                                                      log_mentions)])
-
-    return log_mentions_by_voyage
