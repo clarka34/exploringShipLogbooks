@@ -10,6 +10,17 @@ from .config import *
 
 
 def finding_fuzzy_matches(all_log_values, slave_log_values):
+    """
+    Extracts the top 5 fuzzy matches from slave_log_values for each value
+    in all_log_values
+
+    Inputs: all_log_values -- unique values in a column in the combined
+                              datasets
+            slave_log_values -- unique values in a column for the slave logs
+                                dataset
+
+    Output: matching_name -- a dictionary containing the fuzzywuzzy results
+    """
     matching_name = {}
 
     for ind, unique in enumerate(all_log_values):
@@ -21,6 +32,15 @@ def finding_fuzzy_matches(all_log_values, slave_log_values):
 
 
 def deleting_matches_below_threshold(threshold, my_dict):
+    """
+    Deletes the fuzzywuzzy matches below a certain set threshold
+
+    Inputs: threshold -- threshold value for matching strings set in config.py
+            my_dict -- dictionary containing fuzzywuzzy matches
+
+    Output: my_dict -- dictionary containing fuzzywuzzy matches above a
+                        certain threshold
+    """
     for key in my_dict:
         for i, match in reversed(list(enumerate(my_dict[key]))):
             match_percent = match[-1]
@@ -31,6 +51,18 @@ def deleting_matches_below_threshold(threshold, my_dict):
 
 
 def matching_values(my_dict, fuzzy_df):
+    """
+    Finds all the strings that match
+
+    Inputs: my_dict -- dictionary containing fuzzywuzzy matches above a
+                        certain threshold
+            fuzzy_df -- dataframe to help with fuzzywuzzy matching
+
+    Output: fuzzy_df -- dataframe to help with fuzzywuzzy matching with numbers
+                        for each matching string
+    """
+    # Sets the same value for each key in the dictionary and the matching
+    # strings contained in the key's values
     for key, value in my_dict.items():
         for y in value:
             key_mask = (fuzzy_df['log_values'] == key)
@@ -48,6 +80,19 @@ def matching_values(my_dict, fuzzy_df):
 
 
 def building_fuzzy_dict(fuzzy_df, slave_log_values):
+    """
+    Builds another dictionary to replace matching values with the corresponding
+    matching string value in the pandas dataframe
+
+    Inputs: fuzzy_df -- dataframe to help with fuzzywuzzy matching with numbers
+                        for each matching string
+            slave_log_values -- unique values in a column for the slave logs
+                                dataset
+
+    Output: fuzzy_dict -- dictionary to replace matching values with the
+                          corresponding matching string value in the pandas
+                          dataframe
+    """
     alist = []
     for count in fuzzy_df['count'].unique():
         s_ind = fuzzy_df['log_values'][fuzzy_df['count'] ==
@@ -68,6 +113,18 @@ def building_fuzzy_dict(fuzzy_df, slave_log_values):
 
 
 def fuzzy_wuzzy_classification(df, column):
+    """
+    Runs fuzzywuzzy string matching on selected column of a pandas dataframe
+    and returns the same dataframe with the matching strings renamed with the
+    corresponding matching value contained in the slave logs dataset
+
+    Inputs: df -- dataframe containing the cliwoc dataset and the slave logs
+                  dataset
+            column -- column to run fuzzywuzzy string matching on
+
+    Output: df -- dataframe containing the cliwoc dataset and the slave logs
+                  dataset with the fuzzywuzzy string matching
+    """
     slave_log_indices = (df['slave_logs'] == 3)
     slave_log_values = list(df[column][slave_log_indices].unique())
     all_log_values = list(df[column].unique())
