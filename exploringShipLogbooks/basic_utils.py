@@ -43,7 +43,6 @@ def isolate_columns(df, desired_columns):
     # from the list
 
     undesired_columns = remove_undesired_columns(df, desired_columns)
-
     df = df.drop(undesired_columns, axis=1)
 
     return df

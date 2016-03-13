@@ -18,9 +18,12 @@ from .config import *
 
 
 class LogbookClassifier:
-
+    """
+    Handles loading, cleaning, and classification of ship logbook data.
+    """
     def __init__(self, classification_algorithm='Decision Tree'):
 
+        # initialize classifier based on desired algorithm
         if classification_algorithm == "Decision Tree":
             self.classifier = MultinomialNB(alpha=1.0, class_prior=None,
                                             fit_prior=True)
@@ -33,7 +36,15 @@ class LogbookClassifier:
         self.classification_algorithm = classification_algorithm
 
     def load_data(self, data_sets=['slave_voyages', 'cliwoc']):
+        """
+        Load data. All data is stored in the sub-directory "data".
 
+        slave_voyage_logs is data from www.slavevoyages.org.
+            - stored in pickle format, because website .csv file is corrupted
+              and the .sav file format requires r package to read.
+        cliwoc_data is data from kaggle website, collected for a NOAA project.
+            - extracted from zip file
+        """
         if 'slave_voyages' in data_sets:
             file_name = './exploringShipLogbooks/data/tastdb-exp-2010'
             self.slave_voyage_logs = pd.read_pickle(file_name)
@@ -48,26 +59,53 @@ class LogbookClassifier:
 
     def find_logs_that_mention_slaves(self):
         """
-
+        Use word count function to find all logs in cliwoc_data that explicitly
+        mention slaves in logbook text. This will later be used as a validation
+        data set for classification.
         """
         self.slave_mask = wc.count_key_words(self.cliwoc_data, text_columns, slave_words)
         print('Found ', len(self.slave_mask[self.slave_mask == True]),
               ' logs that mention slaves')
 
-    def find_training_data(self, criteria):
+    def find_training_data(self, criteria={'ShipName': non_slave_ships}):
         """
+        Isolate training data from cliwoc_data. This training data will be used
+        as negative (non-slave-trade) training data. Default is to isolate by
+        ship name for ships that have been proven to be non-slave ships by
+        historical research.
 
-        """
+        Criteria is given as a dictionary with key as column name,
+        and a list of desired values.
+        """"
         self.training_mask = isolate_training_data(self.cliwoc_data, criteria)
 
-    def encode_ship_names(self):
+    def encode_ship_IDs(self):
         """
+        Convert ship ID for each voyage in CLIWOC data to numerical values.
         """
 
         label_encoding = preprocessing.LabelEncoder().fit(self.cliwoc_data['LogbookIdent']).classes_
         self.cliwoc_data['LogbookIdent'] = preprocessing.LabelEncoder().fit_transform(self.cliwoc_data['LogbookIdent'])
 
     def clean_and_sort_data(self):
+        """
+        Cleans data sets before joining slave_voyage_logs and cliwoc_data.
+
+        Performs the following operations:
+            - adds "slave_logs" column which contains a numerical ID indicating
+            - converts cliwoc_data from all logs to one entry per voyage (voyages
+              determined by LogbookIdent). If any logs in a voyage mention slaves,
+              the voyage is considered a slave ship (ID 2, see below)
+            - the data classification. IDs are as follows:
+                - 0 = unclassified data
+                - 1 = negative training data (from cliwoc_data)
+                - 2 = positive training/validadtion data (from cliwoc_data)
+                - 3 = slave_voyages_data (positive training data)
+            - Drops undesired columns from all data
+            - Changes column names in slave_voyage_logs to match cliwoc data
+            - Re-indexes slave_voyage_logs to start indexes after end of cliwoc_data.
+              This will prevent duplicate indices after joining data sets.
+        """
         # set slave logs column to 0 for cliwoc data
         self.cliwoc_data['slave_logs'] = np.zeros(len(self.cliwoc_data))
 
@@ -77,10 +115,6 @@ class LogbookClassifier:
                                                                          [self.slave_mask].unique()))
 
         # set value of slave log columns for training and validation data
-        # cliwoc data (unclassified) = 0
-        # cliwoc_data (no slaves) = 1
-        # cliwoc_data (slaves) = 2
-        # slave voyages data = 3
         self.cliwoc_data.loc[self.training_mask, 'slave_logs'] = 1
         self.cliwoc_data.loc[slave_log_locations, 'slave_logs'] = 2
 
@@ -105,14 +139,19 @@ class LogbookClassifier:
         # clean slave_voyage logs to have columns that match cliwoc
         slave_voyage_desired_cols = list(slave_voyage_conversions.keys())
         self.slave_voyage_logs = isolate_columns(self.slave_voyage_logs, slave_voyage_desired_cols)
-
         self.slave_voyage_logs.rename(columns=slave_voyage_conversions, inplace=True)
+
         self.slave_voyage_logs['slave_logs'] = 3
         self.slave_voyage_indices = (range(len(self.slave_voyage_logs)) + (self.cliwoc_data.tail(1).index[0] + 1))
         self.slave_voyage_logs = self.slave_voyage_logs.set_index(self.slave_voyage_indices)
 
     def join_data(self):
+        """
+        Join cliwoc and slave_voyage_logs data sets and clean data by converting
+        all strings to lower case.
 
+        This operation should be performed after cleaning the data.
+        """
         self.all_data = pd.concat([self.cliwoc_data, self.slave_voyage_logs],
                                   ignore_index=True)
         self.all_data = clean_data(self.all_data)
@@ -120,19 +159,45 @@ class LogbookClassifier:
         del self.cliwoc_data, self.slave_voyage_logs
 
     def match_similar_words(self):
+        """
+        Uses fuzzy string comparison to match similar values in the data.
 
+        This operation is optional, but can help to match cognates in different
+        languages and eliminate typos in data transcription.
+
+        For example, frigate (English) and fregate (Spanish) would be converted
+        to the same value before classification.
+        """
         fuzz_columns = ['Nationality', 'ShipType', 'VoyageFrom', 'VoyageTo']
         for col in fuzz_columns:
             self.all_data = fuzzy_wuzzy_classification(self.all_data, col)
 
     def encode_data(self):
-        # this will use the encoder class.
+        """
+        Encode categorical values before classification.
+
+        For Decision Trees classification, label encoding is used and all unique
+        string values in the data are converted to unique numerical values.
+
+        For Naive Bayes Classification, label encoding is performed followed by
+        one-hot-encoding, which creates a column of boolean values for each unique
+        category in the data set.
+
+        See ski-kit-learn prepcessing documention for further description of
+        encoding algorithms.
+        """
+        # encode data
         self.all_data = encode_data_df(self.all_data, self.classification_algorithm)
-        # drop NaNs
-        self.all_data['no_data'] = self.all_data['nan'].apply(lambda x: x.any(), axis=1).astype(int)
-        self.all_data = self.all_data.drop('nan', axis=1)
+
+        # drop NaNs from one hot encoded data
+        if self.classification_algorithm == 'Naive Bayes':
+            self.all_data['no_data'] = self.all_data['nan'].apply(lambda x: x.any(), axis=1).astype(int)
+            self.all_data = self.all_data.drop('nan', axis=1)
 
     def extract_data_sets(self, multiplier=True):
+        """
+        After encoding and cleaning data, extract training and validation data sets.
+        """
         # extract logs to classify later
         self.unclassified_logs = self.all_data[self.all_data['slave_logs'] == 0]
 
@@ -172,26 +237,34 @@ class LogbookClassifier:
         del self.all_data
 
     def fit_classifier(self):
-        # convert to numpy array
+        """
+        Fit classifier with training data.
+        """
         columns = list(self.training_data.columns)
         columns.remove('slave_logs')
 
         self.classifier.fit(self.training_data[columns], self.training_classes)
 
     def validate_classifier(self):
-            validation_sets = [self.validation_set_1, self.validation_set_2]
+        """
+        Determine predicted classes of validation data sets, and print results.
 
-            for i, validation_set in enumerate(validation_sets):
-                columns = list(validation_set.columns)
-                columns.remove('slave_logs')
-                predictions = self.classifier.predict(validation_set[columns])
+        For the current configuration, all validation data sets are expected to
+        be positively identified as slave ships.
+        """
+        validation_sets = [self.validation_set_1, self.validation_set_2]
 
-                counts = collections.Counter(predictions)
-                print('validation set', i, ' results: ', counts)
+        for i, validation_set in enumerate(validation_sets):
+            columns = list(validation_set.columns)
+            columns.remove('slave_logs')
+            predictions = self.classifier.predict(validation_set[columns])
+
+            counts = collections.Counter(predictions)
+            print('validation set', i, ' results: ', counts)
 
     def classify(self):
         """
-        This will document stuff.
+        Classify remaining unclassified data and print results.
         """
 
         # predict class of data (for all columns except for slave_logs, which
