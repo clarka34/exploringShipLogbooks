@@ -189,7 +189,7 @@ class LogbookClassifier:
 
 
         # convert to numpy and classify
-        columns = list(data_to_classify.columns)
+        columns = list(self.unclassified_logs.columns)
         columns.remove('slave_logs')
         #data_matrix = data_to_classify.as_matrix(columns)
         predictions = self.classifier.predict(self.unclassified_logs[columns])
