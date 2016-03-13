@@ -165,11 +165,11 @@ def encode_data(df, classification_algorithm):
             encoder.append(col)
         else:
             if classification_algorithm == 'Decision Tree':
-                encoded_data.append(label_encoder(df[col]))
+                encoded_data.append(np.array([label_encoder(df[col])]).T)
+                encoder.append(col)
             elif classification_algorithm == 'Naive Bayes':
                 encoded_data.append(one_hot_encoder(df[col]))
-
-            encoder.append(label_encoder_key(df[col]))
+                encoder.append(label_encoder_key(df[col]))
 
     encoded_data = np.hstack(encoded_data)
     encoder = np.hstack(encoder)
