@@ -22,8 +22,8 @@ class LogbookClassifier:
     def __init__(self, classification_algorithm='Decision Tree'):
 
         if classification_algorithm == "Decision Tree":
-            self.classifier = MultinomialNB(alpha = 1.0, class_prior = None,
-                                            fit_prior = True)
+            self.classifier = MultinomialNB(alpha=1.0, class_prior=None,
+                                            fit_prior=True)
         elif classification_algorithm == "Naive Bayes":
             self.classifier = tree.DecisionTreeClassifier()
         else:
@@ -32,7 +32,7 @@ class LogbookClassifier:
 
         self.classification_algorithm = classification_algorithm
 
-    def load_data(self, data_sets = ['slave_voyages', 'cliwoc']):
+    def load_data(self, data_sets=['slave_voyages', 'cliwoc']):
 
         if 'slave_voyages' in data_sets:
             file_name = './exploringShipLogbooks/data/tastdb-exp-2010'
@@ -43,12 +43,15 @@ class LogbookClassifier:
 
         if 'slave_voyages' not in data_sets and 'cliwoc' not in data_sets:
             warning('Warning: no data loaded. Currently data extraction is',
-                  ' only implemented for cliwoc15 data (cliwoc) and slave',
-                  'voyages logs (slave_voyages).')
+                    ' only implemented for cliwoc15 data (cliwoc) and slave',
+                    'voyages logs (slave_voyages).')
 
     def find_logs_that_mention_slaves(self):
+        """
+
+        """
         self.slave_mask = wc.count_key_words(self.cliwoc_data, text_columns, slave_words)
-        print('Found ', len(self.slave_mask[self.slave_mask==True]),
+        print('Found ', len(self.slave_mask[self.slave_mask == True]),
               ' logs that mention slaves')
 
     def find_training_data(self, criteria):
@@ -58,6 +61,9 @@ class LogbookClassifier:
         self.training_mask = isolate_training_data(self.cliwoc_data, criteria)
 
     def encode_ship_names(self):
+        """
+        """
+
         label_encoding = preprocessing.LabelEncoder().fit(self.cliwoc_data['LogbookIdent']).classes_
         self.cliwoc_data['LogbookIdent'] = preprocessing.LabelEncoder().fit_transform(self.cliwoc_data['LogbookIdent'])
 
@@ -65,7 +71,8 @@ class LogbookClassifier:
         # set slave logs column to 0 for cliwoc data
         self.cliwoc_data['slave_logs'] = np.zeros(len(self.cliwoc_data))
 
-        # searches all values in a voyage to determine if it contains slave mentions
+        # searches all values in a voyage to determine
+        # if it contains slave mentions
         slave_log_locations = self.cliwoc_data['LogbookIdent'].isin(list(self.cliwoc_data['LogbookIdent']
                                                                          [self.slave_mask].unique()))
 
@@ -74,13 +81,13 @@ class LogbookClassifier:
         # cliwoc_data (no slaves) = 1
         # cliwoc_data (slaves) = 2
         # slave voyages data = 3
-        self.cliwoc_data.loc[self.training_mask,'slave_logs'] = 1
-        self.cliwoc_data.loc[slave_log_locations,'slave_logs'] = 2
+        self.cliwoc_data.loc[self.training_mask, 'slave_logs'] = 1
+        self.cliwoc_data.loc[slave_log_locations, 'slave_logs'] = 2
 
         # sort by logbookIdent and set as index
         self.cliwoc_data = self.cliwoc_data.sort_values('LogbookIdent', ascending=True)
         self.cliwoc_data_all = self.cliwoc_data.set_index('LogbookIdent', drop=False).copy()
-        self.cliwoc_data = self.cliwoc_data.set_index('LogbookIdent', drop = False)
+        self.cliwoc_data = self.cliwoc_data.set_index('LogbookIdent', drop=False)
         self.cliwoc_data = self.cliwoc_data.drop_duplicates('LogbookIdent')
 
         # isolate desired columns from cliwoc data
@@ -97,17 +104,17 @@ class LogbookClassifier:
 
         # clean slave_voyage logs to have columns that match cliwoc
         slave_voyage_desired_cols = list(slave_voyage_conversions.keys())
-        self.slave_voyage_logs = isolate_columns(self.slave_voyage_logs,
-                                            slave_voyage_desired_cols)
+        self.slave_voyage_logs = isolate_columns(self.slave_voyage_logs, slave_voyage_desired_cols)
 
         self.slave_voyage_logs.rename(columns=slave_voyage_conversions, inplace=True)
         self.slave_voyage_logs['slave_logs'] = 3
-        self.slave_voyage_indices = range(len(self.slave_voyage_logs)) + (self.cliwoc_data.tail(1).index[0]+1)
+        self.slave_voyage_indices = (range(len(self.slave_voyage_logs)) + (self.cliwoc_data.tail(1).index[0] + 1))
         self.slave_voyage_logs = self.slave_voyage_logs.set_index(self.slave_voyage_indices)
 
     def join_data(self):
 
-        self.all_data = pd.concat([self.cliwoc_data, self.slave_voyage_logs], ignore_index=True)
+        self.all_data = pd.concat([self.cliwoc_data, self.slave_voyage_logs],
+                                  ignore_index=True)
         self.all_data = clean_data(self.all_data)
 
         del self.cliwoc_data, self.slave_voyage_logs
@@ -125,39 +132,42 @@ class LogbookClassifier:
         self.all_data['no_data'] = self.all_data['nan'].apply(lambda x: x.any(), axis=1).astype(int)
         self.all_data = self.all_data.drop('nan', axis=1)
 
-    def extract_data_sets(self, multiplier = True):
+    def extract_data_sets(self, multiplier=True):
         # extract logs to classify later
-        self.unclassified_logs = self.all_data[self.all_data['slave_logs']==0]
+        self.unclassified_logs = self.all_data[self.all_data['slave_logs'] == 0]
 
         # extract first validation data set
-        self.validation_set_1 = self.all_data[self.all_data['slave_logs']==2]
+        self.validation_set_1 = self.all_data[self.all_data['slave_logs'] == 2]
 
         # reserve first 20% of slave_voyage_logs as validation set 2
         validation_set_2_indices = range(self.slave_voyage_indices.min(),
-                                         self.slave_voyage_indices.min() + round(len(self.slave_voyage_indices)*.2))
+                                         self.slave_voyage_indices.min() + round(len(self.slave_voyage_indices) * .2))
         self.validation_set_2 = self.all_data.iloc[validation_set_2_indices]
 
         # extract training data for positive and negative
         training_logs_pos = self.all_data.drop(validation_set_2_indices)
-        training_logs_pos = training_logs_pos[training_logs_pos['slave_logs']==3]
+        training_logs_pos = training_logs_pos[training_logs_pos['slave_logs'] == 3]
 
-        training_logs_neg = self.all_data[self.all_data['slave_logs']==1]
+        training_logs_neg = self.all_data[self.all_data['slave_logs'] == 1]
 
         # calculate multiplier to make data sets equal size
         if multiplier:
-            repeat_multiplier = round(len(training_logs_pos)/len(training_logs_neg))
+            repeat_multiplier = round(len(training_logs_pos) / len(training_logs_neg))
         else:
+            # set multiplier to one if no multipler is desired
             repeat_multiplier = 1
 
-        # create list of classes for training data (0 is for non-slave, 1 is for slave)
+        # create list of classes for training data
+        # (0 is for non-slave, 1 is for slave)
         # index matches training_data
         training_classes = np.zeros(len(training_logs_neg)).repeat(repeat_multiplier)
-        #classes = np.append(classes, np.ones(len(training_logs_pos)))
-        self.training_classes = np.append(training_classes, np.ones(len(training_logs_pos)))
+        self.training_classes = np.append(training_classes,
+                                          np.ones(len(training_logs_pos)))
 
         # join training data
-        neg_rep = pd.concat([training_logs_neg]*repeat_multiplier)
-        self.training_data = pd.concat([neg_rep, training_logs_pos], ignore_index=True)
+        neg_rep = pd.concat([training_logs_neg] * repeat_multiplier)
+        self.training_data = pd.concat([neg_rep, training_logs_pos],
+                                       ignore_index=True)
 
         del self.all_data
 
@@ -178,20 +188,16 @@ class LogbookClassifier:
 
                 counts = collections.Counter(predictions)
                 print('validation set', i, ' results: ', counts)
-                #percent_correct = (counts[expected_class]/(len(predictions))* 100)
-
-                #print('Validation set', i, ' was classified as', expected_class,
-                #      round(percent_correct,2), '% of the time')
 
     def classify(self):
+        """
+        This will document stuff.
+        """
 
-        #data_to_classify = self.unclassified_logs.copy()
-
-
-        # convert to numpy and classify
+        # predict class of data (for all columns except for slave_logs, which
+        # will hold the classification result)
         columns = list(self.unclassified_logs.columns)
         columns.remove('slave_logs')
-        #data_matrix = data_to_classify.as_matrix(columns)
         predictions = self.classifier.predict(self.unclassified_logs[columns])
 
         # revalue slave_log ID column to indicate classification
@@ -199,7 +205,6 @@ class LogbookClassifier:
 
         # print statstics
         counts = collections.Counter(predictions)
-
         for key in counts:
-            percent = (counts[key]/(len(predictions))* 100)
+            percent = (counts[key] / (len(predictions)) * 100)
             print(round(percent, 2), 'of data was classified as ', key)
