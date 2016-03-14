@@ -33,7 +33,7 @@ def finding_fuzzy_matches(all_log_values, slave_log_values):
 
 def deleting_matches_below_threshold(threshold, my_dict):
     """
-    Deletes the fuzzywuzzy matches below a certain set threshold
+    Deletes the fuzzy matches below a certain set threshold
 
     Inputs: threshold -- threshold value for matching strings set in config.py
             my_dict -- dictionary containing fuzzywuzzy matches
@@ -114,7 +114,7 @@ def building_fuzzy_dict(fuzzy_df, slave_log_values):
 
 def fuzzy_wuzzy_classification(df, column):
     """
-    Runs fuzzywuzzy string matching on selected column of a pandas dataframe
+    Runs fuzzy string matching on selected column of a pandas dataframe
     and returns the same dataframe with the matching strings renamed with the
     corresponding matching value contained in the slave logs dataset
 
