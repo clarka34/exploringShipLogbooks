@@ -25,10 +25,10 @@ class LogbookClassifier:
 
         # initialize classifier based on desired algorithm
         if classification_algorithm == "Decision Tree":
+            self.classifier = tree.DecisionTreeClassifier()
+        elif classification_algorithm == "Naive Bayes":
             self.classifier = MultinomialNB(alpha=1.0, class_prior=None,
                                             fit_prior=True)
-        elif classification_algorithm == "Naive Bayes":
-            self.classifier = tree.DecisionTreeClassifier()
         else:
             raise KeyError("Please enter a valid classification type",
                            " (Decision Trees or Naive Bayes)")
