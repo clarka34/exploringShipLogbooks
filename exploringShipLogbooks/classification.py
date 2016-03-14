@@ -132,6 +132,8 @@ class LogbookClassifier:
         year_ind = ~(self.slave_voyage_logs['yeardep'].isnull())
         self.slave_voyage_logs = self.slave_voyage_logs[year_ind]
 
+        # drop cliwoc data befor 1750 (only one instance)
+        self.cliwoc_data = self.cliwoc_data[self.cliwoc_data['Year'] > 1750]
         # drop slave_voyage data from before beginning of cliwoc data
         ind = (self.slave_voyage_logs['yeardep'] > self.cliwoc_data['Year'].min()) \
             & (self.slave_voyage_logs['yeardep'] < self.cliwoc_data['Year'].max())
