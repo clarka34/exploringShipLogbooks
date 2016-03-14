@@ -338,7 +338,7 @@ class LogbookClassifier:
         print("Fiting classifier...")
         self.fit_classifier()
 
-        print("Validationg Classifier...")
+        print("Validating Classifier...")
         print()
         self.validate_classifier()
 
