@@ -47,7 +47,6 @@ Class project for CSE 599 to explore ship logbooks dating from 1750-1850
   - **extract_logbook_data** - This function fetches the logbook data and extracts the trips to a pandas dataframe
   - **isolate_columns** - This function removes undesired columns from a given data set
   - **remove_undesired_columns** - This function finds the undesired columns in the data set based on user input of the desired columns
-  - **create_widget** - This function contains an optional widget that can be used to allow the user to select desired columns
   - **clean_data** - This function makes all the data lower case and also strips the white space from the end of each entry
   - **label_encoder** - This function converts categorical data to numerical data
   - **label_encoder_key** - This function stores the key for the conversion of categorical data to numerical data

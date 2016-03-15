@@ -4,9 +4,7 @@ import zipfile
 import numpy as np
 import os.path as op
 import pandas as pd
-import ipywidgets as widgets
 
-from IPython.display import display
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 
@@ -74,33 +72,6 @@ def remove_undesired_columns(df, desired_columns):
             warnings.warn('Column not found')
 
     return undesired_columns
-
-
-def create_widget(df):
-    """
-    Creates widget to select desired columns
-
-    Inputs:
-    df -- dataframe containing logbook data
-
-    Ouput:
-    desired_columns -- columns that the user wants
-    """
-    w = widgets.SelectMultiple(description="Select desired columns",
-                               options=list(df.columns.values))
-
-    display(w)
-
-    button = widgets.Button(description="Done!")
-    display(button)
-
-    def on_button_clicked(b):
-        w.close()
-        button.close()
-
-    button.on_click(on_button_clicked)
-
-    return w
 
 
 def clean_data(df):
