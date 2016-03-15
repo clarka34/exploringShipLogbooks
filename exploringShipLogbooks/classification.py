@@ -64,7 +64,7 @@ class LogbookClassifier:
         data set for classification.
         """
         self.slave_mask = wc.count_key_words(self.cliwoc_data, text_columns, slave_words)
-        print('Found ', len(self.slave_mask[self.slave_mask == True]),
+        print('Found ', len(self.slave_mask[self.slave_mask]),
               ' logs that mention slaves')
 
     def find_training_data(self, criteria={'ShipName': non_slave_ships}):
