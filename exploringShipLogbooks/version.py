@@ -18,7 +18,6 @@ __version__ = '.'.join(map(str, _ver))
 
 CLASSIFIERS = ["Intended Audience :: Science/Research",
                "License :: MIT License",
-               "Operating System :: Mac OS",
                "Programming Language :: Python",
                "Topic :: Scientific/Engineering"]
 
@@ -52,7 +51,6 @@ LONG_DESCRIPTION = long_description
 URL = "https://github.com/clarka34/exploringShipLogbooks"
 DOWNLOAD_URL = ""
 LICENSE = "MIT"
-PLATFORMS = "Mac OS"
 MAJOR = _version_major
 MINOR = _version_minor
 MICRO = _version_micro
