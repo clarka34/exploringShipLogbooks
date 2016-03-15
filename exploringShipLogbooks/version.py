@@ -58,4 +58,4 @@ VERSION = __version__
 PACKAGES = ['exploringShipLogbooks',
             'exploringShipLogbooks.tests']
 PACKAGE_DATA = {'exploringShipLogbooks': [pjoin('data', '*')]}
-REQUIRES = ["collections", "numpy", "os", "pandas", "rpy2", "sklearn", "warnings", "zipfile"]
+REQUIRES = ["collections", "numpy", "os", "pandas", "rpy2", "sklearn", "sys", "warnings", "zipfile"]

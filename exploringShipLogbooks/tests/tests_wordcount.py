@@ -3,8 +3,9 @@ Unit tests for wordcount functions
 """
 
 import unittest
-import wordcount as wc
 import pandas as pd
+import exploringShipLogbooks.wordcount as wc
+
 
 class test_wordcount(unittest.TestCase):
 
