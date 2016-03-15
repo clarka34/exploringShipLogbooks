@@ -1,20 +1,13 @@
 """ Unit tests for basic_utils.py """
-
+import exploringShipLogbooks
 import pep8
 import unittest
 
 import numpy as np
 import pandas as pd
 
-from basic_utils import extract_logbook_data
+import exploringShipLogbooks.fuzz_replacement as fuzzy
 
-
-class setUpVariables:
-    def fuzzy_variables(self):
-
-
-    def dataframe_variables(self):
-        pd.DataFrame()
 
 class RatioTest(unittest.TestCase):
 
@@ -43,7 +36,8 @@ class RatioTest(unittest.TestCase):
 
     def testCaseInsensitive(self):
         self.assertNotEqual(fuzz.ratio(self.s1, self.s2), 100)
-        self.assertEqual(fuzz.ratio(utils.full_process(self.s1), utils.full_process(self.s2)), 100)
+        self.assertEqual(fuzz.ratio(utils.full_process(self.s1),
+                         utils.full_process(self.s2)), 100)
 
     def testPartialRatio(self):
         self.assertEqual(fuzz.partial_ratio(self.s1, self.s3), 100)
