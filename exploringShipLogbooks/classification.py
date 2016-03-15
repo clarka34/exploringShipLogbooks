@@ -1,20 +1,22 @@
+import collections
+import exploringShipLogbooks
+import warnings
 import numpy as np
 import pandas as pd
-from . import wordcount as wc
-from sklearn import preprocessing
-from sklearn.naive_bayes import MultinomialNB
-from sklearn import tree
-import warnings
-import collections
+import os.path as op
 
 from .basic_utils import extract_logbook_data
 from .basic_utils import isolate_columns
 from .basic_utils import isolate_training_data
 from .basic_utils import clean_data
 from .basic_utils import encode_data_df
-from .fuzz_replacement import fuzzy_wuzzy_classification
-
 from .config import *
+from .fuzz_replacement import fuzzy_wuzzy_classification
+from .wordcount import count_key_words
+
+from sklearn import preprocessing
+from sklearn.naive_bayes import MultinomialNB
+from sklearn import tree
 
 
 class LogbookClassifier:
@@ -46,7 +48,8 @@ class LogbookClassifier:
             - extracted from zip file
         """
         if 'slave_voyages' in data_sets:
-            file_name = './exploringShipLogbooks/data/tastdb-exp-2010'
+            data_path = op.join(exploringShipLogbooks.__path__[0], 'data')
+            file_name = data_path + '/tastdb-exp-2010'
             self.slave_voyage_logs = pd.read_pickle(file_name)
 
         if 'cliwoc' in data_sets:
@@ -63,7 +66,7 @@ class LogbookClassifier:
         mention slaves in logbook text. This will later be used as a validation
         data set for classification.
         """
-        self.slave_mask = wc.count_key_words(self.cliwoc_data, text_columns, slave_words)
+        self.slave_mask = count_key_words(self.cliwoc_data, text_columns, slave_words)
         print('Found ', len(self.slave_mask[self.slave_mask]),
               ' logs that mention slaves')
 
@@ -296,7 +299,7 @@ class LogbookClassifier:
 
         # isolate the columns that we would like to save
         columns = ['ShipName', 'ShipType', 'slave_logs',
-                  'Nationality', 'Year', 'Lat3', 'Lon3']
+                   'Nationality', 'Year', 'Lat3', 'Lon3']
         self.cliwoc_data_all = isolate_columns(self.cliwoc_data_all, columns)
 
         # save the altered cliwoc dataframe to a csv file
@@ -337,14 +340,14 @@ class LogbookClassifier:
         print("Extracting training and validation data...")
         self.extract_data_sets()
 
-        print("Fiting classifier...")
+        print("Fitting classifier...")
         self.fit_classifier()
 
-        print("Validating Classifier...")
+        print("Validating classifier...")
         print()
         self.validate_classifier()
 
-        print("Classifing unknown data...")
+        print("Classifying unknown data...")
         print()
         self.classify()
 

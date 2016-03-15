@@ -1,6 +1,8 @@
-import zipfile
+import exploringShipLogbooks
 import warnings
+import zipfile
 import numpy as np
+import os.path as op
 import pandas as pd
 import ipywidgets as widgets
 
@@ -18,7 +20,8 @@ def extract_logbook_data(desired_filename):
     Output: pandas dataframe containing the file or error message
     """
     try:
-        zf = zipfile.ZipFile('./exploringShipLogbooks/data/climate-data-from-ocean-ships.zip')
+        data_path = op.join(exploringShipLogbooks.__path__[0], 'data')
+        zf = zipfile.ZipFile(data_path + '/climate-data-from-ocean-ships.zip')
         file_handle = zf.open(desired_filename)
         return pd.read_csv(file_handle)
     except:
