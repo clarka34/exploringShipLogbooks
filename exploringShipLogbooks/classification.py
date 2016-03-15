@@ -1,5 +1,6 @@
 import collections
 import exploringShipLogbooks
+import rpy2
 import warnings
 import numpy as np
 import pandas as pd
@@ -14,9 +15,12 @@ from .config import *
 from .fuzz_replacement import fuzzy_wuzzy_classification
 from .wordcount import count_key_words
 
+from rpy2.robjects import pandas2ri
 from sklearn import preprocessing
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import tree
+
+pandas2ri.activate()
 
 
 class LogbookClassifier:
@@ -37,7 +41,7 @@ class LogbookClassifier:
 
         self.classification_algorithm = classification_algorithm
 
-    def load_data(self, data_sets=['slave_voyages', 'cliwoc']):
+    def load_data(self, data_sets=['slave_voyages', 'cliwoc'], data_type='sav'):
         """
         Load data. All data is stored in the sub-directory "data".
 
@@ -48,9 +52,14 @@ class LogbookClassifier:
             - extracted from zip file
         """
         if 'slave_voyages' in data_sets:
-            data_path = op.join(exploringShipLogbooks.__path__[0], 'data')
-            file_name = data_path + '/tastdb-exp-2010'
-            self.slave_voyage_logs = pd.read_pickle(file_name)
+            if data_type == 'pickles':
+                data_path = op.join(exploringShipLogbooks.__path__[0], 'data')
+                file_name = data_path + '/tastdb-exp-2010'
+                self.slave_voyage_logs = pd.read_pickle(file_name)
+            elif data_type == 'sav':
+                data_path = op.join(exploringShipLogbooks.__path__[0], 'data')
+                filename = data_path + '/tastdb-exp-2010.sav'
+                self.slave_voyage_logs = rpy2.robjects.r('foreign::read.spss("%s",to.data.frame=TRUE)'% filename)
 
         if 'cliwoc' in data_sets:
             self.cliwoc_data = extract_logbook_data('CLIWOC15.csv')
