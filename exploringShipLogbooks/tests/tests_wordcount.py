@@ -6,7 +6,6 @@ import unittest
 import wordcount as wc
 import pandas as pd
 
-
 class test_wordcount(unittest.TestCase):
 
     def test_count_key_words(self):
@@ -59,6 +58,3 @@ class test_wordcount(unittest.TestCase):
         expected_result.index = [1, 2, 3]
 
         self.assertTrue(pd.DataFrame.equals(result, expected_result))
-
-if __name__ == '__main__':
-    unittest.main()
