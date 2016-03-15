@@ -30,6 +30,13 @@ Class project for CSE 599 to explore ship logbooks dating from 1750-1850
 - The CLIWOC data has been well-used to study climate change and weather patterns. However, because the data set is concurrent with a large portion of the Slave Voyage data, there may be information contained in the CLIWOC data that could be added to the Slave Voyages data without requiring the transcrition of additional slave logs. Because the data for both data sets was crowdsourced, this could facilitate cross-disciplinary sharing of data without requring additional manual effort. 
 - There are other crowdsourced projects in progress to transcribe old ship logs, such as the [Old Weather](https://www.oldweather.org/#/) project, that could use this package to further explore the data contained in the digitized logs.
 - The goal of the project is to classify voyages in the CLIWOC data set as either related to the slave trade or not, and visualize the results.
+
+## Installing the package
+- The package can be installed in the command line:
+```python
+python setup.py install
+```
+
 ## Package Use
 ### Using the package to classify 17th century ship voyages
 - The LogbookClassifier class combines all functions to load, clean, process, and classify 17th century ship voyages as related or unrelated to the slave trade.
