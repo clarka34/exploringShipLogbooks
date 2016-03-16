@@ -26,8 +26,6 @@ class TestBasicUtils(unittest.TestCase):
     def testFilenameCorrect(self):
         # test to make sure the function works if a valid filename is entered
         test_data = bu.extract_logbook_data('Lookup_UK_WindDirection.csv')
-        self.assertTrue(np.array_equal(test_data.columns.values,
-                        np.array(['ID', 'WindDirection', 'ProbWindDD'])))
         self.assertTrue(test_data.columns.values[0], 'ID')
         self.assertTrue(test_data.columns.values[0], 'WindDirection')
         self.assertTrue(test_data.columns.values[0], 'ProbWindDD')
@@ -53,32 +51,19 @@ class TestBasicUtils(unittest.TestCase):
     def testCleanData(self):
         # test to make sure the string values are converted to lower case
         df_copy = bu.clean_data(self.df.copy())
-        self.assertTrue(np.array_equal(df_copy['WindDirection'],
-                        np.array(['north', 'east', 'south', 'west'])))
         self.assertTrue(df_copy['WindDirection'][0], 'north')
         self.assertTrue(df_copy['WindDirection'][1], 'east')
         self.assertTrue(df_copy['WindDirection'][2], 'south')
         self.assertTrue(df_copy['WindDirection'][3], 'west')
 
-    def testLabelEncoderString(self):
+    def testLabelEncoder(self):
         # test to make sure the LabelEncoder converts categorical data to
         # numerical data
         encoded_data = bu.label_encoder(self.df['WindDirection'])
         self.assertTrue(np.array_equal(encoded_data, np.array([0, 1, 2, 3])))
-        self.assertEqual(encoded_data[0].astype(int), 0)
-        self.assertEqual(encoded_data[1].astype(int), 1)
-        self.assertEqual(encoded_data[2].astype(int), 2)
-        self.assertEqual(encoded_data[3].astype(int), 3)
-
-    def testLabelEncoderInt(self):
-        # test to make sure the LabelEncoder does not convert numerical data
-        encoded_data = bu.label_encoder(self.df['ProbWindDD'])
-        self.assertEqual(encoded_data[0], 4)
-        self.assertEqual(encoded_data[1], 5)
-        self.assertEqual(encoded_data[2], 6)
-        self.assertEqual(encoded_data[3], 7)
 
     def testLabelEncoderKey(self):
+        # test to make check that the LabelEncoder returns the correct key
         encoded_data_key = bu.label_encoder_key(self.df['WindDirection'])
         self.assertTrue(encoded_data_key[0], 'North')
         self.assertTrue(encoded_data_key[1], 'easT')
@@ -86,27 +71,27 @@ class TestBasicUtils(unittest.TestCase):
         self.assertTrue(encoded_data_key[3], 'west')
 
     def testOneHotEncoder(self):
+        # test to make sure the OneHotEncoder converts numerical data to one
+        # hot encoded data
         encoded_data = bu.one_hot_encoder(self.df['WindDirection'])
-        self.assertEqual(encoded_data[0, 0].astype(int), 1)
-        self.assertEqual(encoded_data[1, 0].astype(int), 0)
-        self.assertEqual(encoded_data[2, 0].astype(int), 0)
-        self.assertEqual(encoded_data[3, 0].astype(int), 0)
+        self.assertTrue(np.array_equal(encoded_data[:, 0],
+                        np.array([1, 0, 0, 0])))
 
     def TestEncodeDataNaiveBayes(self):
+        # test encoder using the Naive Bayes algorithm and one hot encoding
         encoded_data, encoder = bu.encode_data(self.df, 'Naive Bayes')
-        self.assertEqual(encoded_data[0, 2].astype(int), 1)
-        self.assertEqual(encoded_data[1, 2].astype(int), 0)
-        self.assertEqual(encoded_data[2, 2].astype(int), 0)
-        self.assertEqual(encoded_data[3, 2].astype(int), 0)
+        self.assertTrue(np.array_equal(encoded_data[:, 2],
+                        np.array([1, 0, 0, 0])))
 
     def TestEncodeDataDecisionTree(self):
+        # test encoder using the decision tree algorithm and label encoding
         encoded_data, encoder = bu.encode_data(self.df, 'Decision Tree')
-        self.assertEqual(encoded_data[0, 2].astype(int), 0)
-        self.assertEqual(encoded_data[1, 2].astype(int), 1)
-        self.assertEqual(encoded_data[2, 2].astype(int), 2)
-        self.assertEqual(encoded_data[3, 2].astype(int), 3)
+        self.assertTrue(np.array_equal(encoded_data[:, 2],
+                        np.array([0, 1, 2, 3])))
 
     def TestEncodeDataNaiveBayesDF(self):
+        # test conversion of encoded data to pandas dataframe using using the
+        # Naive Bayes classification algorithm
         encoded_df = bu.encode_data_df(self.df, 'Naive Bayes')
         columns = encoded_df.columns.values
         self.assertEqual(columns[0], 'ID')
@@ -117,6 +102,8 @@ class TestBasicUtils(unittest.TestCase):
         self.assertEqual(columns[5], 'west')
 
     def TestEncodeDataDecisionTreeDF(self):
+        # test conversion of encoded data to pandas dataframe using using the
+        # decision tree classification algorithm
         encoded_df = bu.encode_data_df(self.df, 'Decision Tree')
         columns = encoded_df.columns.values
         self.assertEqual(columns[0], 'ID')
