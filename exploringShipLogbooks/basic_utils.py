@@ -22,8 +22,8 @@ def extract_logbook_data(desired_filename):
         zf = zipfile.ZipFile(data_path + '/climate-data-from-ocean-ships.zip')
         file_handle = zf.open(desired_filename)
         return pd.read_csv(file_handle)
-    except KeyError:
-        return 'Please enter valid filename.'
+    except:
+        assert KeyError('Please enter valid filename.')
 
 
 def isolate_columns(df, desired_columns):
@@ -50,10 +50,11 @@ def isolate_columns(df, desired_columns):
 def remove_undesired_columns(df, desired_columns):
     """
     Determines undesired columns from the data set
+
     Inputs:
     df -- dataframe containing logbook data
-    desired_columns -- columns that user wants to user
-    -- formatted as w.value (where w is the output of creating_widget)
+    desired_columns -- columns that user wants to analyze
+
     Ouput:
     unwanted_columns -- columns that the user does not want
     """

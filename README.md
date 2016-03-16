@@ -74,6 +74,17 @@ python setup.py install
   - **count_key_words** - This function counts instances of wors contained in the list key_words in the specified columns in a pandas data frame.
   -  **count_all_words** - This function counts instances of all words that are found in the specified columns in a pandas data frame.
 
+## Visualizing Classification Results
+- Fushion Tables was used to visualize the classified ship voyages in the CLIWOC data set.
+- Results are available [here](https://www.google.com/fusiontables/DataSource?docid=1oMz6bYNujbQAz2tViXXncIU8WsYQgcJZ1Jn0_Q5k#rows:id=1).
+  - Select the 'Map of Location' tab to view the voyages overlaid on a map.
+  - The results can be filtered using the following categories in the 'slave_logs' colum.
+        - 1 = data used as negative training data
+        - 2 = data used as positive validation data from cliwoc database
+        - 4 = data classified as a non-slave ship
+        - 5 = data classified a slave ship
+  - The results can also be filtered by individual voyages using the 'LogbookIdent' column.
+
 ## Future Improvements
 - The poor false-positve and false-negative rates observed in the classification can be attributed to several factors:
   - We only have a small amount of negative trianing data, compoared to a large positive training data set. The performance of the classifier could likely be improved greatly by including more negative training data. This could be achieved through the addition of another data set containing descriptions of navy or merchant ships that were definitely not involved in the slave trade. As mentioned previously, the [Old Weather](https://www.oldweather.org/#/) data set could also potentially be used to train the negative training data since it contains records from mid-19th century onwards. Unfortunately, the Old Weather project has not reached completion yet.
