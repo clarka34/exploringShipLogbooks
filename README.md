@@ -37,6 +37,12 @@ Class project for CSE 599 to explore ship logbooks dating from 1750-1850
 python setup.py install
 ```
 
+## Running unit tests
+- The unit tests for the functions can be run using:
+```python
+nosetests
+```
+
 ## Package Use
 ### Using the package to classify 17th century ship voyages
 - The LogbookClassifier class combines all functions to load, clean, process, and classify 17th century ship voyages as related or unrelated to the slave trade.
@@ -72,7 +78,7 @@ python setup.py install
 ### Using the package to count instances of words in a pandas data frame
 - The following functions are included in wordcount.py
   - **count_key_words** - This function counts instances of wors contained in the list key_words in the specified columns in a pandas data frame.
-  -  **count_all_words** - This function counts instances of all words that are found in the specified columns in a pandas data frame.
+  - **count_all_words** - This function counts instances of all words that are found in the specified columns in a pandas data frame.
 
 ## Visualizing Classification Results
 - Fushion Tables was used to visualize the classified ship voyages in the CLIWOC data set.
@@ -86,7 +92,7 @@ python setup.py install
   - The results can also be filtered by individual voyages using the 'LogbookIdent' column.
 
 ## Future Improvements
-- The poor false-positve and false-negative rates observed in the classification can be attributed to several factors:
+- The poor false-positive and false-negative rates observed in the classification can be attributed to several factors:
   - We only have a small amount of negative trianing data, compoared to a large positive training data set. The performance of the classifier could likely be improved greatly by including more negative training data. This could be achieved through the addition of another data set containing descriptions of navy or merchant ships that were definitely not involved in the slave trade. As mentioned previously, the [Old Weather](https://www.oldweather.org/#/) data set could also potentially be used to train the negative training data since it contains records from mid-19th century onwards. Unfortunately, the Old Weather project has not reached completion yet.
   - The logs are all in different languages, and are manually transcribed. Even after using fuzzy string matching, human error in transcription may result in similar values being classified differently. For the start and ending ports of a voyage, this problem could be resolved by using the latitude and longitude of the ports as opposed to the names of the ports.
   - The positive training data is only for ships traveling in the atlantic ocean, whereas the cliwoc data includes world-wide voyages. Analysis of the latitude and longitue of ship voyages could provide further insight.
